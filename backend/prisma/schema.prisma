@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["mongodb"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  email    String  @unique
+  password String
+  role     String
+  userId   String?
+}
+
+model Admin {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  adminId String  @unique
+  name    String
+  phone   String
+  userId  String?
+}
+
+model CharityRepresentative {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  crId    String  @unique
+  name    String
+  address String
+  userId  String?
+}
+
+model Donors {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  donorId String  @unique
+  name    String
+  phone   String
+  userId  String?
+}
+
+model CharityProgramme {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  causeId        String   @unique
+  title          String
+  description    String
+  documentation  String
+  date           DateTime
+  category       String
+  location       String
+  image          String
+  goalAmount     Float
+  raisedAmount   Float
+  verifiedStatus Boolean
+  crId           String?
+  adminId        String?
+}
+
+model Donation {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  donationId    String  @unique
+  donorId       String?
+  causeId       String?
+  amount        Float
+  date          String
+  paymentMethod String
+  message       String?
+}
