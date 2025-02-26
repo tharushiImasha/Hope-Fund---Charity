@@ -4,11 +4,12 @@ import Admin from "../model/Admin"
 
 const router = express.Router();
 
-router.post("/add", async(req, res) => {
+router.post("/add/:email", async(req, res) => {
     console.log(req.body);
+    const email: string = req.params.email;
     const admin: Admin= req.body;
     try{
-        const addedAdmin = await AdminAdd(admin);
+        const addedAdmin = await AdminAdd(email, admin);
         res.json(addedAdmin);
     }catch(err){
         console.log("error adding admin", err);

@@ -2,13 +2,14 @@ import {useDispatch, useSelector} from "react-redux";
 import {Inputs} from "../../components/dashboard/Inputs.tsx";
 import {resetFormData, updateFormData} from "../../reducers/FormSlice.ts";
 import {AddButton} from "../../components/dashboard/AddButton.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Category, Causes, Status} from "../../models/dashboard/Causes.ts";
-import { addCause, deleteCause, updateCause } from "../../reducers/CauseSlice.ts";
+import {addCause, deleteCause, getCause, updateCause} from "../../reducers/CauseSlice.ts";
 import {PencilSquareIcon} from "@heroicons/react/24/outline";
 import {TrashIcon} from "@heroicons/react/16/solid";
 import "../../style/Table.css"
 import {SelectField} from "../../components/dashboard/SelectField.tsx";
+import {getAdmin} from "../../reducers/AdminSlice.ts";
 
 export function Cause() {
 
@@ -23,6 +24,12 @@ export function Cause() {
     const [pdfFile, setPdfFile] = useState<string | null>(null);
 
     const categories: Category[] = ["Health", "Education",  "Animal", "Cancer"];
+
+    useEffect(() => {
+        if(causes.length === 0){
+            dispatch(getCause())
+        }
+    }, [dispatch, causes.length]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -47,6 +54,7 @@ export function Cause() {
             setPdfFile(null);
             setSelectedValue("");
             const newCause = { ...formData, verifiedStatus: "Pending" };
+            console.log(formData);
             dispatch(addCause(newCause));
         }
     };
@@ -77,7 +85,7 @@ export function Cause() {
 
     }
 
-    const handlePdfUpload = (event) => {
+    const handlePDFUpload = (event) => {
         const file = event.target.files[0];
         if (file && file.type === "application/pdf") {
             const reader = new FileReader();
@@ -91,6 +99,24 @@ export function Cause() {
         }
     };
 
+    // const handlePDFUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     const file = event.target.files?.[0]; // Get the selected PDF file
+    //     if (file) {
+    //         const reader = new FileReader();
+    //         reader.readAsDataURL(file); // Convert PDF to Base64
+    //         reader.onload = () => {
+    //             const base64String = reader.result as string;
+    //             console.log("Base64 PDF:", base64String); // Log the converted Base64 string
+    //             dispatch(updateFormData({ name: "documentation", value: base64String }));
+    //         };
+    //         reader.onerror = (error) => {
+    //             console.error("Error converting PDF to Base64:", error);
+    //         };
+    //     }
+    // };
+
+
+
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -102,6 +128,23 @@ export function Cause() {
             reader.readAsDataURL(file);
         }
     };
+
+    // const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     const file = event.target.files?.[0]; // Get the selected file
+    //     if (file) {
+    //         const reader = new FileReader();
+    //         reader.readAsDataURL(file); // Convert to Base64
+    //         reader.onload = () => {
+    //             const base64String = reader.result as string;
+    //             console.log("Base64 Image:", base64String); // Log or store it
+    //             // Send `base64String` to the backend in the API request
+    //         };
+    //         reader.onerror = (error) => {
+    //             console.error("Error converting image to Base64:", error);
+    //         };
+    //     }
+    // };
+
 
     const handleStatusChange = (causeId: string, newStatus: "Verified" | "Blocked") => {
         const existingCause = causes.find(cause => cause.causeId === causeId);
@@ -272,7 +315,7 @@ export function Cause() {
                                     type="file"
                                     id="documentation"
                                     accept="application/pdf"
-                                    onChange={handlePdfUpload}
+                                    onChange={handlePDFUpload}
                                     className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
                                 />
                                 <label
@@ -318,7 +361,8 @@ export function Cause() {
                             <tbody id="my-table">
 
                             {causes.map((cause: Causes) => (
-                                <tr>
+                                <tr key={cause.causeId}>
+
                                     <td className="custom-table-td">{cause.causeId}</td>
                                     <td className="custom-table-td">{cause.title}</td>
                                     <td className="custom-table-td">{cause.description}</td>

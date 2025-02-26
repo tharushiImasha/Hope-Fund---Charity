@@ -5,5 +5,5 @@ export default class Donors {
     donorId!: string;
     name!: string;
     phone!: string;
-    userId?: string;
+    userId!: string;
 }

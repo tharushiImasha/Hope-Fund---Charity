@@ -1,16 +1,25 @@
 import {PrismaClient} from '@prisma/client';
 import Donors from "../model/Donors";
+import User from "../model/User";
 
 const prisma = new PrismaClient();
 
-export async function DonorAdd(d: Donors){
+export async function DonorAdd(email: string, d: Donors){
     try{
+
+        const newUser = await prisma.user.create({
+            data: {
+                email: email,
+                password: "123",
+                role: "ADMIN"
+            }
+        });
+
         const newDonor  = await prisma.donors.create({
             data:{
-                donorId: d.donorId,
                 name: d.name,
                 phone: d.phone,
-                userId: d.userId
+                userId: newUser.userId
             }
         })
         console.log('Donor Added :',newDonor)
@@ -20,12 +29,23 @@ export async function DonorAdd(d: Donors){
     }
 }
 
-export async function DonorDelete(donorId:string) {
+export async function DonorDelete(email:string) {
     try{
-        const deletedDonor = await prisma.donors.delete({
-            where: {donorId: donorId}
+
+        const user = await prisma.user.findUnique({
+            where: { email },
+            select: { userId: true }
         });
-        console.log('Donor deleted :',donorId);
+
+        if (!user) {
+            console.log("User not found!");
+            return;
+        }
+
+        const deletedDonor = await prisma.donors.delete({
+            where: {userId: user.userId}
+        });
+        console.log('Donor deleted :',email);
         return deletedDonor;
     }catch(err){
         console.log("error deleting donor", err);
@@ -40,10 +60,21 @@ export async function getAllDonors(){
     }
 }
 
-export async function DonorUpdate(donorId: string, d: Donors){
+export async function DonorUpdate(email: string, d: Donors){
     try{
+
+        const user = await prisma.user.findUnique({
+            where: { email },
+            select: { userId: true }
+        });
+
+        if (!user) {
+            console.log("User not found!");
+            return;
+        }
+
         const updatedDonor = await prisma.donors.update({
-            where:{ donorId : d.donorId},
+            where:{ userId : user.userId},
             data:{
                 name: d.name,
                 phone: d.phone,

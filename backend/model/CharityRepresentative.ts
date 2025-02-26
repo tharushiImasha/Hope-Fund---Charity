@@ -5,5 +5,6 @@ export default class CharityRepresentative {
     crId!: string;
     name!: string;
     address!: string;
-    userId?: string;
+    nic!: string;
+    userId!: string;
 }

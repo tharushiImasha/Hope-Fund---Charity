@@ -1,6 +1,6 @@
 import {useDispatch, useSelector} from "react-redux";
 import {useState} from "react";
-import {updateUser} from "../../reducers/ProfileSlice.ts";
+import {updateUser} from "../../reducers/UserSlice.ts";
 import {Inputs} from "../../components/dashboard/Inputs.tsx";
 import {updateFormData} from "../../reducers/FormSlice.ts";
 import {AddButton} from "../../components/dashboard/AddButton.tsx";

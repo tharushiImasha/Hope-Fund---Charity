@@ -4,11 +4,12 @@ import CharityRepresentative from "../model/CharityRepresentative"
 
 const router = express.Router();
 
-router.post("/add", async(req, res) => {
+router.post("/add/:email", async(req, res) => {
     console.log(req.body);
+    const email: string = req.params.email;
     const cr: CharityRepresentative= req.body;
     try{
-        const addedCr = await CharityRepresentativeAdd(cr);
+        const addedCr = await CharityRepresentativeAdd(email, cr);
         res.json(addedCr);
     }catch(err){
         console.log("error adding cr", err);

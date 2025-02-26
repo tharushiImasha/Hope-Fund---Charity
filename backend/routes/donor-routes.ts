@@ -4,11 +4,12 @@ import Donors from "../model/Donors"
 
 const router = express.Router();
 
-router.post("/add", async(req, res) => {
+router.post("/add/:email", async(req, res) => {
     console.log(req.body);
+    const email: string = req.params.email;
     const donor: Donors= req.body;
     try{
-        const addedDonors = await DonorAdd(donor);
+        const addedDonors = await DonorAdd(email, donor);
         res.json(addedDonors);
     }catch(err){
         console.log("error adding donor", err);

@@ -1,16 +1,26 @@
 import {PrismaClient} from '@prisma/client';
 import CharityRepresentative from "../model/CharityRepresentative";
+import User from "../model/User";
 
 const prisma = new PrismaClient();
 
-export async function CharityRepresentativeAdd(c: CharityRepresentative){
+export async function CharityRepresentativeAdd(email: string, c: CharityRepresentative){
     try{
+
+        const newUser = await prisma.user.create({
+            data: {
+                email: email,
+                password: "123",
+                role: "ADMIN"
+            }
+        });
+
         const newCr  = await prisma.charityRepresentative.create({
             data:{
-                crId: c.crId,
                 name: c.name,
                 address: c.address,
-                userId: c.userId
+                nic: c.nic,
+                userId: newUser.userId
             }
         })
         console.log('Cr Added :',newCr)
@@ -20,12 +30,23 @@ export async function CharityRepresentativeAdd(c: CharityRepresentative){
     }
 }
 
-export async function CharityRepresentativeDelete(crId:string) {
+export async function CharityRepresentativeDelete(email:string) {
     try{
-        const deletedCr = await prisma.charityRepresentative.delete({
-            where: {crId: crId}
+
+        const user = await prisma.user.findUnique({
+            where: { email },
+            select: { userId: true }
         });
-        console.log('Cr deleted :',crId);
+
+        if (!user) {
+            console.log("User not found!");
+            return;
+        }
+
+        const deletedCr = await prisma.charityRepresentative.delete({
+            where: {userId: user.userId}
+        });
+        console.log('Cr deleted :',email);
         return deletedCr;
     }catch(err){
         console.log("error deleting Cr", err);
@@ -40,13 +61,25 @@ export async function getAllCharityRepresentatives(){
     }
 }
 
-export async function CharityRepresentativeUpdate(crId: string, c: CharityRepresentative){
+export async function CharityRepresentativeUpdate(email: string, c: CharityRepresentative){
     try{
+
+        const user = await prisma.user.findUnique({
+            where: { email },
+            select: { userId: true }
+        });
+
+        if (!user) {
+            console.log("User not found!");
+            return;
+        }
+
         const updatedCr = await prisma.charityRepresentative.update({
-            where:{ crId : c.crId},
+            where:{ userId : user.userId},
             data:{
                 name: c.name,
                 address: c.address,
+                nic: c.nic,
                 userId: c.userId
             }
         })

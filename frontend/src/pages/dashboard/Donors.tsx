@@ -1,11 +1,11 @@
 import {Inputs} from "../../components/dashboard/Inputs.tsx";
 import {resetFormData, updateFormData} from "../../reducers/FormSlice.ts";
 import {useDispatch, useSelector} from "react-redux";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {AddButton} from "../../components/dashboard/AddButton.tsx";
 import {PencilSquareIcon} from "@heroicons/react/24/outline";
 import {TrashIcon} from "@heroicons/react/16/solid";
-import {addDonor, deleteDonor, updateDonor} from "../../reducers/DonorSlice.ts";
+import {addDonor, deleteDonor, getDonor, updateDonor} from "../../reducers/DonorSlice.ts";
 import {Donor} from "../../models/dashboard/Donor.ts";
 
 export function Donors() {
@@ -15,6 +15,12 @@ export function Donors() {
 
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [editStaffId, setEditStaffId] = useState<string | null>(null);
+
+    useEffect(() => {
+        if(donor.length === 0){
+            dispatch(getDonor())
+        }
+    }, [dispatch, donor.length]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -131,7 +137,7 @@ export function Donors() {
                                 </tr>
                                 </thead>
                                 <tbody id="my-table">
-                                {donor?.map((donors: Donor) => (
+                                {donor?.map((donors:Donor) => (
                                     <tr key={donors.email}> {/* Added key prop */}
                                         <td className="custom-table-td">{donors.email}</td>
                                         <td className="custom-table-td">{donors.name}</td>

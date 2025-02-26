@@ -1,16 +1,26 @@
 import {PrismaClient} from '@prisma/client';
 import Admin from "../model/Admin";
+import User from "../model/User";
 
 const prisma = new PrismaClient();
 
-export async function AdminAdd(a: Admin){
+export async function AdminAdd(email: string, a: Admin){
     try{
+
+        const newUser = await prisma.user.create({
+            data: {
+                email: email,
+                password: "123",
+                role: "ADMIN"
+            }
+        });
+
         const newAdmin  = await prisma.admin.create({
             data:{
-                adminId: a.adminId,
                 name: a.name,
                 phone: a.phone,
-                userId: a.userId
+                address: a.address,
+                userId: newUser.userId
             }
         })
         console.log('Admin Added :',newAdmin)
@@ -20,13 +30,30 @@ export async function AdminAdd(a: Admin){
     }
 }
 
-export async function AdminDelete(adminId:string) {
+export async function AdminDelete(email:string) {
     try{
-        const deletedAdmin = await prisma.admin.delete({
-            where: {adminId: adminId}
+
+        const user = await prisma.user.findUnique({
+            where: { email },
+            select: { userId: true }
         });
-        console.log('Admin deleted :',adminId);
+
+        if (!user) {
+            console.log("User not found!");
+            return;
+        }
+
+        const deletedAdmin = await prisma.admin.delete({
+            where: { userId: user.userId }
+        });
+
+        const deletedUser = await prisma.user.delete({
+            where: { userId: user.userId }
+        });
+
+        console.log("Admin deleted:", email);
         return deletedAdmin;
+
     }catch(err){
         console.log("error deleting admin", err);
     }
@@ -40,14 +67,25 @@ export async function getAllAdmins(){
     }
 }
 
-export async function AdminUpdate(adminId: string, a: Admin){
+export async function AdminUpdate(email: string, a: Admin){
     try{
+
+        const user = await prisma.user.findUnique({
+            where: { email },
+            select: { userId: true }
+        });
+
+        if (!user) {
+            console.log("User not found!");
+            return;
+        }
+
         const updatedAdmin = await prisma.admin.update({
-            where:{ adminId : a.adminId},
+            where:{ userId : user.userId},
             data:{
                 name: a.name,
                 phone: a.phone,
-                userId: a.userId
+                address: a.address,
             }
         })
         console.log('Admin updated :',updatedAdmin);

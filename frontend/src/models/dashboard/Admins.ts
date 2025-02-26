@@ -1,5 +1,5 @@
 export class Admins {
-    adminId: string;
+    id: string;
     email: string;
     name: string;
     phone: string;
@@ -7,7 +7,7 @@ export class Admins {
     userId: string;
 
     constructor(adminId: string, email: string, name: string, phone: string, address: string, userId: string) {
-        this.adminId = adminId;
+        this.id = adminId;
         this.email = email;
         this.name = name;
         this.phone = phone;

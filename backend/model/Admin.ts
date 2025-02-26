@@ -5,5 +5,6 @@ export default class Admin {
     adminId!: string;
     name!: string;
     phone!: string;
-    userId?: string;
+    address!: string;
+    userId!: string;
 }

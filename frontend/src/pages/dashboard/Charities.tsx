@@ -1,14 +1,15 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import "../../style/Crop.css";
 import {Inputs} from "../../components/dashboard/Inputs.tsx";
 import {AddButton} from "../../components/dashboard/AddButton.tsx";
 import {useDispatch, useSelector} from "react-redux";
 import {Charity} from "../../models/dashboard/Charity.ts";
 import {resetFormData, updateFormData} from "../../reducers/FormSlice.ts";
-import {addCrop, deleteCrop, updateCrop} from "../../reducers/CharitySlice.ts";
+import {addCharity, deleteCharity, updateCharity, getCharity} from "../../reducers/CharitySlice.ts";
 import "../../style/Table.css"
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import {TrashIcon} from "@heroicons/react/16/solid";
+import {getAdmin} from "../../reducers/AdminSlice.ts";
 
 export function Charities() {
 
@@ -24,18 +25,24 @@ export function Charities() {
         dispatch(updateFormData({name, value}));
     };
 
+    useEffect(() => {
+        if(charity.length === 0){
+            dispatch(getCharity())
+        }
+    }, [dispatch, charity.length]);
+
     const handleSubmit = (e) => {
         e.preventDefault();
         if (isEditing && editCropId) {
             const updatedCrop = { ...formData, crId: editCropId };
-            dispatch(updateCrop(updatedCrop));
+            dispatch(updateCharity(updatedCrop));
             setIsEditing(false);
             setEditCropId(null);
             dispatch(resetFormData());
         } else {
             console.log(formData);
             dispatch(resetFormData());
-            dispatch(addCrop(formData));
+            dispatch(addCharity(formData));
         }
 
     };
@@ -56,7 +63,7 @@ export function Charities() {
 
         if (confirmDelete) {
             try {
-                dispatch(deleteCrop(charity));
+                dispatch(deleteCharity(charity));
             } catch (error) {
                 console.log(error)
                 alert('Failed to delete crop. Please try again.');
@@ -145,8 +152,8 @@ export function Charities() {
                             </thead>
                             <tbody id="my-table">
 
-                            {charity.map((charities: Charity) => (
-                                <tr>
+                            {Array.isArray(charity) && charity.map(charities => (
+                                <tr key={charities.crId}>
                                     <td className="custom-table-td">{charities.email}</td>
                                     <td className="custom-table-td">{charities.name}</td>
                                     <td className="custom-table-td">{charities.address}</td>

@@ -15,35 +15,33 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
-  email    String  @unique
+  userId   String @id @default(auto()) @map("_id") @db.ObjectId
+  email    String @unique
   password String
   role     String
-  userId   String?
 }
 
 model Admin {
   id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  adminId String  @unique
   name    String
   phone   String
-  userId  String?
+  address String?
+  userId  String  @unique
 }
 
 model CharityRepresentative {
   id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  crId    String  @unique
   name    String
   address String
-  userId  String?
+  nic     String?
+  userId  String  @unique
 }
 
 model Donors {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  donorId String  @unique
-  name    String
-  phone   String
-  userId  String?
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  name   String
+  phone  String
+  userId String @unique
 }
 
 model CharityProgramme {

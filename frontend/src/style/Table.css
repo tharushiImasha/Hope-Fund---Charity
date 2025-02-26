@@ -1,10 +1,11 @@
-/*.custom-table-td {*/
-/*    @apply border border-gray-400*/
-/*    text-center*/
-/*}*/
+.custom-table-td {
+    border: 1px solid #9ca3af;
+    text-align: center;
+}
 
-/*.custom-table-th {*/
-/*    @apply border border-gray-400*/
-/*    text-center font-extrabold*/
-/*    bg-white*/
-/*}*/
+.custom-table-th {
+    border: 1px solid #9ca3af;
+    text-align: center;
+    font-weight: 800;
+    background-color: white;
+}

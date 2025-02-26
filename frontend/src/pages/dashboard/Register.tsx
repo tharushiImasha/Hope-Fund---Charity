@@ -3,14 +3,15 @@ import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {updateFormData} from "../../reducers/FormSlice.ts";
 import {Inputs} from "../../components/dashboard/Inputs.tsx";
-import {addCrop} from "../../reducers/CharitySlice.ts";
+import {addUser} from "../../reducers/UserSlice.ts";
+import {AppDispatch} from "../../store/Store.ts";
 
 export function Register() {
 
     const [showPassword, setShowPassword] = useState(false);
     const formData = useSelector((state) => state.formData);
     const user = useSelector((state) => state.user );
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -19,7 +20,8 @@ export function Register() {
     };
 
     function createAcc() {
-        dispatch(addCrop(formData));
+        dispatch(addUser(formData));
+        console.log(formData);
         localStorage.setItem("email", formData.email);
         localStorage.setItem("password", formData.password);
         localStorage.setItem("name", formData.name);
@@ -76,14 +78,24 @@ export function Register() {
                                     onChange={handleChange}
                                 />
 
-                                <Inputs
-                                    label="Email"
-                                    placeholder="Enter your email"
-                                    type="email"
-                                    name="email"
-                                    value={formData.email || ''}
-                                    onChange={handleChange}
-                                />
+                                <div className="grid grid-cols-2 gap-6 gap-x-[50px]">
+                                    <Inputs
+                                        label="Email"
+                                        placeholder="Enter your email"
+                                        type="email"
+                                        name="email"
+                                        value={formData.email || ''}
+                                        onChange={handleChange}
+                                    />
+
+                                    <Inputs
+                                        label="Role"
+                                        placeholder="Enter your role"
+                                        name="role"
+                                        value={formData.role || ''}
+                                        onChange={handleChange}
+                                    />
+                                </div>
 
                                 <div className="grid grid-cols-2 gap-6 gap-x-[50px]">
                                     <Inputs

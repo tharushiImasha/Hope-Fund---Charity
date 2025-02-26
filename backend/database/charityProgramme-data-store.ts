@@ -83,7 +83,7 @@ const prisma = new PrismaClient();
 
 export async function CharityProgrammeAdd(c: CharityProgramme){
     try{
-        // MongoDB can handle large text fields, but it's good to validate
+
         if (c.image && !c.image.startsWith('data:image/')) {
             throw new Error('Invalid image format. Base64 image data required');
         }
@@ -98,7 +98,7 @@ export async function CharityProgrammeAdd(c: CharityProgramme){
                 title: c.title,
                 description: c.description,
                 documentation: c.documentation,
-                date: c.date, // Now a Date object
+                date: c.date,
                 category: c.category,
                 location: c.location,
                 image: c.image,
