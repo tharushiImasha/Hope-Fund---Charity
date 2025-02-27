@@ -6,6 +6,7 @@ import donorSlice from "../reducers/DonorSlice.ts";
 import causeSlice from "../reducers/CauseSlice.ts";
 import adminSlice from "../reducers/AdminSlice.ts";
 import userSlice from "../reducers/UserSlice.ts";
+import donationSlice from "../reducers/DonationSlice.ts";
 
 export  const store = configureStore({
     reducer: {
@@ -16,6 +17,7 @@ export  const store = configureStore({
         admin: adminSlice,
         user: userSlice,
         profile: profileSlice,
+        donation: donationSlice,
     }
 })
 

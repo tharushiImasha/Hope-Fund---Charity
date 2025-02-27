@@ -30,21 +30,18 @@ export function Admin() {
 
     useEffect(() => {
         if (admins.length > 0 && user.length > 0) {
-            // Create a new array to store the updated admin details
             const newAdminDetails = [];
 
             for (let i = 0; i < admins.length; i++) {
                 let email = "";
 
                 for (let j = 0; j < user.length; j++) {
-                    // Check if the userId matches
                     if (admins[i].userId === user[j].userId) {
-                        email = user[j].email; // Assign the email of the matched user
-                        break; // Exit inner loop once match is found
+                        email = user[j].email;
+                        break;
                     }
                 }
 
-                // Push the new admin detail object to the array
                 newAdminDetails.push({
                     email: email,
                     name: admins[i].name,
@@ -53,13 +50,11 @@ export function Admin() {
                 });
             }
 
-            // Set adminDetails once with the new array
             setAdminDetails(newAdminDetails);
 
-            console.log(newAdminDetails); // Log the new admin details
+            console.log(newAdminDetails);
         }
     }, [admins, user]);
-
 
 
     const handleChange = (e) => {
@@ -70,18 +65,42 @@ export function Admin() {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (isEditing && editEmail) {
-            const updatedAdmin = { ...formData, email: editEmail };
+            // Make sure we have the complete admin object with the correct email
+            const adminToUpdate = adminDetails.find(admin => admin.email === editEmail);
+            if (!adminToUpdate) {
+                alert('Admin not found.');
+                return;
+            }
+
+            // Create the updated admin object with the form data
+            const updatedAdmin = {
+                email: editEmail, // Keep the original email as identifier
+                name: formData.name,
+                phone: formData.phone,
+                address: formData.address,
+            };
+
+            // Dispatch the update action
             dispatch(updateAdmin(updatedAdmin));
+
+            // Update the local adminDetails state immediately
+            setAdminDetails(prevDetails =>
+                prevDetails.map(admin =>
+                    admin.email === editEmail
+                        ? { ...admin, ...updatedAdmin }
+                        : admin
+                )
+            );
+
+            // Reset form and editing state
             setIsEditing(false);
             setEditEmail(null);
             dispatch(resetFormData());
         } else {
             console.log(formData);
 
-            // Add admin and update local state immediately
             dispatch(addAdmin(formData));
 
-            // Immediately update the local adminDetails state
             setAdminDetails(prevAdminDetails => [
                 ...prevAdminDetails,
                 {
@@ -129,26 +148,23 @@ export function Admin() {
 
         console.log('Starting edit process for admin:', admin.email);
 
+        // Set editing state
         setIsEditing(true);
         setEditEmail(admin.email);
 
-        setTimeout(() => {
-            const adminFields = [
-                "adminId",
-                "email",
-                "name",
-                "phone",
-                "address",
-                "userId"
-            ];
+        // Prepare the form data from the admin object
+        const formDataToSet = {
+            email: admin.email || '',
+            name: admin.name || '',
+            phone: admin.phone || '',
+            address: admin.address || '',
+            adminId: admin.id || '',
+            userId: admin.userId || ''
+        };
 
-            adminFields.forEach(field => {
-                dispatch(updateFormData({
-                    name: field,
-                    value: admin[field] || ''
-                }));
-            });
-
+        // Dispatch a single batch update for all form fields
+        Object.entries(formDataToSet).forEach(([name, value]) => {
+            dispatch(updateFormData({ name, value }));
         });
     };
 

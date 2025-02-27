@@ -9,16 +9,19 @@ import {addCharity, deleteCharity, updateCharity, getCharity} from "../../reduce
 import "../../style/Table.css"
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import {TrashIcon} from "@heroicons/react/16/solid";
-import {getAdmin} from "../../reducers/AdminSlice.ts";
+import {getUser} from "../../reducers/UserSlice.ts";
 
 export function Charities() {
 
     const dispatch = useDispatch();
     const formData = useSelector((state) => state.formData);
     const charity = useSelector((state) => state.charity );
+    const user = useSelector((state) => state.user );
+
+    const [charityDetails, setCharityDetails] = useState([]);
 
     const [isEditing, setIsEditing] = useState<boolean>(false);
-    const [editCropId, setEditCropId] = useState<string | null>(null);
+    const [editEmail, setEditEmail] = useState<string | null>(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -28,21 +31,87 @@ export function Charities() {
     useEffect(() => {
         if(charity.length === 0){
             dispatch(getCharity())
+            dispatch(getUser())
         }
     }, [dispatch, charity.length]);
 
+    useEffect(() => {
+        if (charity.length > 0 && user.length > 0) {
+            const newCrDetails = [];
+
+            for (let i = 0; i < charity.length; i++) {
+                let email = "";
+
+                for (let j = 0; j < user.length; j++) {
+                    if (charity[i].userId === user[j].userId) {
+                        email = user[j].email;
+                        break;
+                    }
+                }
+
+                newCrDetails.push({
+                    email: email,
+                    name: charity[i].name,
+                    address: charity[i].address,
+                    nic: charity[i].nic,
+                });
+            }
+
+            setCharityDetails(newCrDetails);
+
+            console.log(newCrDetails);
+        }
+    }, [charity, user]);
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (isEditing && editCropId) {
-            const updatedCrop = { ...formData, crId: editCropId };
-            dispatch(updateCharity(updatedCrop));
+        if (isEditing && editEmail) {
+            const crToUpdate = charityDetails.find(cr => cr.email === editEmail);
+            if (!crToUpdate) {
+                alert('Charity not found.');
+                return;
+            }
+
+            // Create the updated admin object with the form data
+            const updatedCr = {
+                email: editEmail,
+                name: formData.name,
+                nic: formData.nic,
+                address: formData.address,
+            };
+
+            // Dispatch the update action
+            dispatch(updateCharity(updatedCr));
+
+            // Update the local adminDetails state immediately
+            setCharityDetails(prevDetails =>
+                prevDetails.map(admin =>
+                    admin.email === editEmail
+                        ? { ...admin, ...updatedCr }
+                        : admin
+                )
+            );
+
+            // Reset form and editing state
             setIsEditing(false);
-            setEditCropId(null);
+            setEditEmail(null);
             dispatch(resetFormData());
         } else {
             console.log(formData);
-            dispatch(resetFormData());
+
             dispatch(addCharity(formData));
+
+            setCharityDetails(prevAdminDetails => [
+                ...prevAdminDetails,
+                {
+                    email: formData.email,
+                    name: formData.name,
+                    address: formData.address,
+                    nic: formData.nic,
+                },
+            ]);
+
+            dispatch(resetFormData());
         }
 
     };
@@ -58,12 +127,12 @@ export function Charities() {
         }
 
         const confirmDelete = window.confirm(
-            `Are you sure you want to delete crop "${charity.name}" (${charity.name})?`
+            `Are you sure you want to delete crop "${charity.name}")?`
         );
 
         if (confirmDelete) {
             try {
-                dispatch(deleteCharity(charity));
+                dispatch(deleteCharity(charity.email));
             } catch (error) {
                 console.log(error)
                 alert('Failed to delete crop. Please try again.');
@@ -77,27 +146,24 @@ export function Charities() {
         e.preventDefault();
         e.stopPropagation();
 
-        console.log('Starting edit process for crop:', charity.email);
+        console.log('Starting edit process for charity:', charity.email);
 
         setIsEditing(true);
-        setEditCropId(charity.email);
+        setEditEmail(charity.email);
 
-        setTimeout(() => {
-            const cropFields = [
-                "email",
-                "name",
-                "address",
-                "nic",
-            ];
+        const formDataToSet = {
+            email: charity.email || '',
+            name: charity.name || '',
+            address: charity.address || '',
+            nic: charity.nic || '',
+            adminId: charity.crId || '',
+            userId: charity.userId || ''
+        };
 
-            cropFields.forEach(field => {
-                dispatch(updateFormData({
-                    name: field,
-                    value: charity[field] || ''
-                }));
-            });
-
-        }, 0);
+        // Dispatch a single batch update for all form fields
+        Object.entries(formDataToSet).forEach(([name, value]) => {
+            dispatch(updateFormData({ name, value }));
+        });
     };
 
     return (
@@ -152,7 +218,7 @@ export function Charities() {
                             </thead>
                             <tbody id="my-table">
 
-                            {Array.isArray(charity) && charity.map(charities => (
+                            {charityDetails.map(charities => (
                                 <tr key={charities.crId}>
                                     <td className="custom-table-td">{charities.email}</td>
                                     <td className="custom-table-td">{charities.name}</td>

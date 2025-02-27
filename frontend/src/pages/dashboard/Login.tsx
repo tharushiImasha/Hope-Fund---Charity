@@ -11,6 +11,7 @@ export function Login() {
     const user = useSelector((state) => state.user );
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [showPopup, setShowPopup] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -29,7 +30,12 @@ export function Login() {
     }
 
     function register() {
-        navigate('/register');
+        setShowPopup(true); // Show the popup when RegisterCharity is clicked
+    }
+
+    function handleUserTypeSelection(userType: string) {
+        setShowPopup(false);
+        navigate(`/register/${userType}`);
     }
 
     return (
@@ -106,6 +112,34 @@ export function Login() {
                     </div>
 
                 </div>
+
+                {showPopup && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black/60 bg-opacity-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+                            <h2 className="text-xl font-semibold mb-4">Register as:</h2>
+                            <div className="flex gap-4">
+                                <button
+                                    className="px-4 py-2 bg-[#17502E] text-white rounded hover:bg-[#1A6D3B]"
+                                    onClick={() => handleUserTypeSelection("donor")}
+                                >
+                                    Donor
+                                </button>
+                                <button
+                                    className="px-4 py-2 bg-[#17502E] text-white rounded hover:bg-[#1A6D3B]"
+                                    onClick={() => handleUserTypeSelection("charity")}
+                                >
+                                    Charity Representative
+                                </button>
+                            </div>
+                            <button
+                                className="mt-4 text-gray-500 text-sm hover:underline"
+                                onClick={() => setShowPopup(false)}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 <div className="hidden lg:flex flex-1 items-center justify-center bg-white p-[10px]">
                     <img

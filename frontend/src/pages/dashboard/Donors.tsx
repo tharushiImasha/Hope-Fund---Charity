@@ -7,20 +7,52 @@ import {PencilSquareIcon} from "@heroicons/react/24/outline";
 import {TrashIcon} from "@heroicons/react/16/solid";
 import {addDonor, deleteDonor, getDonor, updateDonor} from "../../reducers/DonorSlice.ts";
 import {Donor} from "../../models/dashboard/Donor.ts";
+import {getUser} from "../../reducers/UserSlice.ts";
 
 export function Donors() {
     const dispatch = useDispatch();
     const formData = useSelector((state) => state.formData);
     const donor = useSelector((state) => state.donor );
+    const user = useSelector((state) => state.user );
+
+    const [donorDetails, setDonorDetails] = useState([]);
 
     const [isEditing, setIsEditing] = useState<boolean>(false);
-    const [editStaffId, setEditStaffId] = useState<string | null>(null);
+    const [editEmail, setEditEmail] = useState<string | null>(null);
 
     useEffect(() => {
         if(donor.length === 0){
             dispatch(getDonor())
+            dispatch(getUser());
         }
-    }, [dispatch, donor.length]);
+    }, [dispatch, donor.length, user.length]);
+
+    useEffect(() => {
+        if (donor.length > 0 && user.length > 0) {
+            const newDonorDetails = [];
+
+            for (let i = 0; i < donor.length; i++) {
+                let email = "";
+
+                for (let j = 0; j < user.length; j++) {
+                    if (donor[i].userId === user[j].userId) {
+                        email = user[j].email;
+                        break;
+                    }
+                }
+
+                newDonorDetails.push({
+                    email: email,
+                    name: donor[i].name,
+                    phone: donor[i].phone,
+                });
+            }
+
+            setDonorDetails(newDonorDetails);
+
+            console.log(newDonorDetails);
+        }
+    }, [donor, user]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -29,16 +61,47 @@ export function Donors() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (isEditing && editStaffId) {
-            const updatedStaff = { ...formData, email: editStaffId };
-            dispatch(updateDonor(updatedStaff));
+        if (isEditing && editEmail) {
+            const donorToUpdate = donorDetails.find(donor => donor.email === editEmail);
+            if (!donorToUpdate) {
+                alert('Donor not found.');
+                return;
+            }
+
+            const updatedDonor = {
+                email: editEmail,
+                name: formData.name,
+                phone: formData.phone,
+            };
+
+            // Dispatch the update action
+            dispatch(updateDonor(updatedDonor));
+
+            setDonorDetails(prevDetails =>
+                prevDetails.map(donor =>
+                    donor.email === editEmail
+                        ? { ...donor, ...updatedDonor }
+                        : donor
+                )
+            );
+
             setIsEditing(false);
-            setEditStaffId(null);
+            setEditEmail(null);
             dispatch(resetFormData());
         } else {
             console.log(formData);
-            dispatch(resetFormData());
+
             dispatch(addDonor(formData));
+            setDonorDetails(prevDonorDetails => [
+                ...prevDonorDetails,
+                {
+                    email: formData.email,
+                    name: formData.name,
+                    phone: formData.phone,
+                },
+            ]);
+
+            dispatch(resetFormData());
         }
 
     };
@@ -59,7 +122,7 @@ export function Donors() {
 
         if (confirmDelete) {
             try {
-                dispatch(deleteDonor(donor));
+                dispatch(deleteDonor(donor.email));
             } catch (error) {
                 console.log(error)
                 alert('Failed to delete donor. Please try again.');
@@ -74,22 +137,18 @@ export function Donors() {
         e.stopPropagation();
 
         setIsEditing(true);
-        setEditStaffId(donor.email);
+        setEditEmail(donor.email);
 
-        setTimeout(() => {
-            const donorFields = [
-                "email",
-                "name",
-                "phone",
-            ];
+        const formDataToSet = {
+            email: donor.email || '',
+            name: donor.name || '',
+            phone: donor.phone || '',
+            adminId: donor.donorId || '',
+            userId: donor.userId || ''
+        };
 
-            donorFields.forEach(field => {
-                dispatch(updateFormData({
-                    name: field,
-                    value: donor[field] || ''
-                }));
-            });
-
+        Object.entries(formDataToSet).forEach(([name, value]) => {
+            dispatch(updateFormData({ name, value }));
         });
     };
 
@@ -137,7 +196,7 @@ export function Donors() {
                                 </tr>
                                 </thead>
                                 <tbody id="my-table">
-                                {donor?.map((donors:Donor) => (
+                                {donorDetails.map(donors => (
                                     <tr key={donors.email}> {/* Added key prop */}
                                         <td className="custom-table-td">{donors.email}</td>
                                         <td className="custom-table-td">{donors.name}</td>

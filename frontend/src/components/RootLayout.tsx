@@ -16,7 +16,7 @@ export function RootLayout() {
     const location = useLocation();
 
     const isDashboardSection = location.pathname.startsWith("/dashboard");
-    const isAuthRoute = location.pathname === "/register" || location.pathname === "/login";
+    const isAuthRoute = location.pathname === "/register/donor" || location.pathname === "/register/charity" || location.pathname === "/login";
     const isDonationPage = location.pathname === "/donation";
 
     return (

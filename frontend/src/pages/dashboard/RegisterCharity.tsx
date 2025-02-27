@@ -5,14 +5,20 @@ import {updateFormData} from "../../reducers/FormSlice.ts";
 import {Inputs} from "../../components/dashboard/Inputs.tsx";
 import {addUser} from "../../reducers/UserSlice.ts";
 import {AppDispatch} from "../../store/Store.ts";
+import {SelectField} from "../../components/dashboard/SelectField.tsx";
+import {Category} from "../../models/dashboard/Causes.ts";
+import {Role} from "../../models/dashboard/User.ts";
 
-export function Register() {
+export function RegisterCharity() {
 
     const [showPassword, setShowPassword] = useState(false);
     const formData = useSelector((state) => state.formData);
     const user = useSelector((state) => state.user );
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
+    const [selectedValue, setSelectedValue] = useState('');
+
+    const roles: Role[] = ["Charity Representative", "Donor"];
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -21,6 +27,11 @@ export function Register() {
 
     function createAcc() {
         dispatch(addUser(formData));
+
+        if (selectedValue === 'Charity Representative') {
+
+        }
+
         console.log(formData);
         localStorage.setItem("email", formData.email);
         localStorage.setItem("password", formData.password);
@@ -88,12 +99,19 @@ export function Register() {
                                         onChange={handleChange}
                                     />
 
-                                    <Inputs
+                                    <SelectField
                                         label="Role"
-                                        placeholder="Enter your role"
                                         name="role"
-                                        value={formData.role || ''}
-                                        onChange={handleChange}
+                                        value={selectedValue}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            setSelectedValue(value);
+                                            dispatch(updateFormData({ name: "role", value }));
+                                        }}
+                                        options={roles.map((role) => ({
+                                            value: role,
+                                            label: role,
+                                        }))}
                                     />
                                 </div>
 

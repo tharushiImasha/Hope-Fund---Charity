@@ -1,55 +1,34 @@
 import { TopBanner } from "../../components/website/TopBanner.tsx";
-import { useState, useMemo } from "react";
+import {useState, useMemo, useEffect} from "react";
 import { FaBars, FaThLarge } from "react-icons/fa";
 import { CauseCard } from "../../components/website/CauseCard.tsx";
 import { ListCauseCard } from "../../components/website/ListCauseCard.tsx";
+import {getCause} from "../../reducers/CauseSlice.ts";
+import {Charity} from "../../models/dashboard/Charity.ts";
+import {Causes} from "../../models/dashboard/Causes.ts";
+import {useDispatch, useSelector} from "react-redux";
 
 // Define our category options
 const categories = [
     { name: "All", icon: "/website/assets/icons/allCharity.png" },
-    { name: "Health Care", icon: "/website/assets/icons/healthcare.png" },
+    { name: "Health", icon: "/website/assets/icons/healthcare.png" },
     { name: "Animal Welfare", icon: "/website/assets/icons/animal-welfare.png" },
     { name: "Education", icon: "/website/assets/icons/education.png" },
     { name: "Cancer", icon: "/website/assets/icons/cancer.png" },
     { name: "Emergency", icon: "/website/assets/icons/emergency.png" },
 ];
 
-// Define our charity type
-type Charity = {
-    id: number;
-    image: string;
-    title: string;
-    category: string;
-    goal: number;
-    raised: number;
-    description: string;
-    location: string;
-};
 
 // Our base charity data - this should be your complete list
-const charities: Charity[] = [
-    { id: 1, image: "/website/assets/Causes1.png", title: "Food give way for public hospital in Colombo 07", category: "Health Care", goal: 120000, raised: 100000, description: "Helping patients at Colombo 07 hospital with food donations.", location: "Colombo 07"},
-    { id: 2, image: "/website/assets/Causes2.png", title: "Food give way for public hospital in Colombo 07", category: "Health Care", goal: 125000, raised: 80000, description: "Providing nutritious meals for cancer patients in need.", location: "Colombo General Hospital"},
-    { id: 3, image: "/website/assets/Causes1.png", title: "Food give way for public hospital in Colombo 07", category: "Cancer", goal: 90000, raised: 70000, description: "Supporting cancer patients with their medical bills.", location: "Maharagama Cancer Hospital"},
-    { id: 4, image: "/website/assets/Causes2.png", title: "Support children's education", category: "Education", goal: 150000, raised: 100000, description: "Helping children at Galle with book donation", location: "Galle"},
-    { id: 5, image: "/website/assets/Causes1.png", title: "Clean water for rural areas", category: "Animal Welfare", goal: 100000, raised: 60000, description: "Providing meals for street dogs", location: "Hambanthota"},
-    { id: 6, image: "/website/assets/Causes2.png", title: "Shelter for the homeless", category: "Emergency", goal: 200000, raised: 180000, description: "Supporting make homes to poor people", location: "Mathara"},
-
-    { id: 1, image: "/website/assets/Causes1.png", title: "Food give way for public hospital in Colombo 07", category: "Health Care", goal: 120000, raised: 100000, description: "Helping patients at Colombo 07 hospital with food donations.", location: "Colombo 07"},
-    { id: 2, image: "/website/assets/Causes2.png", title: "Food give way for public hospital in Colombo 07", category: "Health Care", goal: 125000, raised: 80000, description: "Providing nutritious meals for cancer patients in need.", location: "Colombo General Hospital"},
-    { id: 3, image: "/website/assets/Causes1.png", title: "Food give way for public hospital in Colombo 07", category: "Cancer", goal: 90000, raised: 70000, description: "Supporting cancer patients with their medical bills.", location: "Maharagama Cancer Hospital"},
-    { id: 4, image: "/website/assets/Causes2.png", title: "Support children's education", category: "Education", goal: 150000, raised: 100000, description: "Helping children at Galle with book donation", location: "Galle"},
-    { id: 5, image: "/website/assets/Causes1.png", title: "Clean water for rural areas", category: "Animal Welfare", goal: 100000, raised: 60000, description: "Providing meals for street dogs", location: "Hambanthota"},
-    { id: 6, image: "/website/assets/Causes2.png", title: "Shelter for the homeless", category: "Emergency", goal: 200000, raised: 180000, description: "Supporting make homes to poor people", location: "Mathara"},
-
-    { id: 1, image: "/website/assets/Causes1.png", title: "Food give way for public hospital in Colombo 07", category: "Health Care", goal: 120000, raised: 100000, description: "Helping patients at Colombo 07 hospital with food donations.", location: "Colombo 07"},
-    { id: 2, image: "/website/assets/Causes2.png", title: "Food give way for public hospital in Colombo 07", category: "Health Care", goal: 125000, raised: 80000, description: "Providing nutritious meals for cancer patients in need.", location: "Colombo General Hospital"},
-    { id: 3, image: "/website/assets/Causes1.png", title: "Food give way for public hospital in Colombo 07", category: "Cancer", goal: 90000, raised: 70000, description: "Supporting cancer patients with their medical bills.", location: "Maharagama Cancer Hospital"},
-    { id: 4, image: "/website/assets/Causes2.png", title: "Support children's education", category: "Education", goal: 150000, raised: 100000, description: "Helping children at Galle with book donation", location: "Galle"},
+const charities: Causes[] = [
 
 ];
 
 export function Charities() {
+
+    const dispatch = useDispatch();
+    const causes = useSelector((state) => state.cause );
+
     // State management
     const [selectedCategory, setSelectedCategory] = useState<string>("All");
     const [isLoading, setIsLoading] = useState(false);
@@ -57,25 +36,20 @@ export function Charities() {
     const [currentPage, setCurrentPage] = useState(1);
     const charitiesPerPage = 6;
 
-    const filteredCharities = useMemo(() => {
-        if (isLoading) {
-            return [];
-        }
+    useEffect(() => {
+        dispatch(getCause());
+    }, [dispatch]);
 
-        if (selectedCategory === "All") {
-            return charities;
-        }
-        return charities.filter(charity => charity.category === selectedCategory);
-    }, [selectedCategory, isLoading]);
+
+    const filteredCharities = useMemo(() => {
+        if (isLoading) return [];
+        if (selectedCategory === "All") return causes;
+        return causes.filter((cause: any) => cause.category === selectedCategory);
+    }, [selectedCategory, causes, isLoading]);
 
     const handleCategoryChange = (category: string) => {
-        setIsLoading(true);
-
-        setTimeout(() => {
-            setSelectedCategory(category);
-            setCurrentPage(1);
-            setIsLoading(false);  // End loading state
-        }, 100);  // Very short delay for visual transition
+        setSelectedCategory(category);
+        setCurrentPage(1);
     };
 
     const totalPages = Math.ceil(filteredCharities.length / charitiesPerPage);
@@ -138,9 +112,9 @@ export function Charities() {
                     {currentCharities.length > 0 ? (
                         currentCharities.map((cause) => (
                             view === "grid" ? (
-                                <CauseCard key={`${cause.id}-${cause.category}`} cause={cause} />
+                                <CauseCard key={`${cause.causeId}-${cause.category}`} cause={cause} />
                             ) : (
-                                <ListCauseCard key={`${cause.id}-${cause.category}`} cause={cause} />
+                                <ListCauseCard key={`${cause.causeId}-${cause.category}`} cause={cause} />
                             )
                         ))
                     ) : (

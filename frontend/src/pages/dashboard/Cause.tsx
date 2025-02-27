@@ -9,11 +9,11 @@ import {PencilSquareIcon} from "@heroicons/react/24/outline";
 import {TrashIcon} from "@heroicons/react/16/solid";
 import "../../style/Table.css"
 import {SelectField} from "../../components/dashboard/SelectField.tsx";
-import {getAdmin} from "../../reducers/AdminSlice.ts";
+import {AppDispatch} from "../../store/Store.ts";
 
 export function Cause() {
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const formData = useSelector((state) => state.formData);
     const causes = useSelector((state) => state.cause );
     const [selectedValue, setSelectedValue] = useState('');
@@ -48,19 +48,41 @@ export function Cause() {
             setSelectedValue("");
             dispatch(resetFormData());
         } else {
-            console.log(formData);
-            dispatch(resetFormData());
-            setImagePreview(null);
-            setPdfFile(null);
-            setSelectedValue("");
-            const newCause = { ...formData, verifiedStatus: "Pending" };
-            console.log(formData);
-            dispatch(addCause(newCause));
+            const formDataObj = new FormData();
+
+            Object.keys(formData).forEach(key => {
+                if (key !== 'image' && key !== 'documentation') {
+                    formDataObj.append(key, formData[key]);
+                }
+            });
+
+            if (imagePreview && document.getElementById('image').files[0]) {
+                formDataObj.append('image', document.getElementById('image').files[0]);
+            }
+
+            if (pdfFile && document.getElementById('documentation').files[0]) {
+                formDataObj.append('documentation', document.getElementById('documentation').files[0]);
+            }
+
+            // Add verification status
+            formDataObj.append('verifiedStatus', 'Pending');
+
+            // Dispatch the action with FormData
+            dispatch(addCause(formDataObj));
+            resetForm();
         }
     };
 
-    function handleDelete(e, cause: Causes) {
+    const resetForm = () => {
+        setIsEditing(false);
+        setEditFieldId(null);
+        setImagePreview(null);
+        setPdfFile(null);
+        setSelectedValue("");
+        dispatch(resetFormData());
+    };
 
+    function handleDelete(e, cause: Causes) {
         e.preventDefault();
         e.stopPropagation();
 
@@ -80,9 +102,7 @@ export function Cause() {
                 console.log(error)
                 alert('Failed to delete cause. Please try again.');
             }
-
         }
-
     }
 
     const handlePDFUpload = (event) => {
@@ -99,24 +119,6 @@ export function Cause() {
         }
     };
 
-    // const handlePDFUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     const file = event.target.files?.[0]; // Get the selected PDF file
-    //     if (file) {
-    //         const reader = new FileReader();
-    //         reader.readAsDataURL(file); // Convert PDF to Base64
-    //         reader.onload = () => {
-    //             const base64String = reader.result as string;
-    //             console.log("Base64 PDF:", base64String); // Log the converted Base64 string
-    //             dispatch(updateFormData({ name: "documentation", value: base64String }));
-    //         };
-    //         reader.onerror = (error) => {
-    //             console.error("Error converting PDF to Base64:", error);
-    //         };
-    //     }
-    // };
-
-
-
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -129,35 +131,34 @@ export function Cause() {
         }
     };
 
-    // const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     const file = event.target.files?.[0]; // Get the selected file
-    //     if (file) {
-    //         const reader = new FileReader();
-    //         reader.readAsDataURL(file); // Convert to Base64
-    //         reader.onload = () => {
-    //             const base64String = reader.result as string;
-    //             console.log("Base64 Image:", base64String); // Log or store it
-    //             // Send `base64String` to the backend in the API request
-    //         };
-    //         reader.onerror = (error) => {
-    //             console.error("Error converting image to Base64:", error);
-    //         };
-    //     }
-    // };
+    const handleStatusChange = (e, causeId, newStatus) => {
+        e.preventDefault();
+        e.stopPropagation();
 
-
-    const handleStatusChange = (causeId: string, newStatus: "Verified" | "Blocked") => {
-        const existingCause = causes.find(cause => cause.causeId === causeId);
-
-        if (existingCause) {
-            const updatedCause = {
-                ...existingCause,
-                verifiedStatus: newStatus
-            };
-
-            dispatch(updateCause(updatedCause));
+        const existingCause = causes.find((cause) => cause.causeId === causeId);
+        if (!existingCause) {
+            alert("Cause not found!");
+            return;
         }
+
+        // Create updated cause object
+        const updatedCause = {
+            ...existingCause,
+            verifiedStatus: newStatus,
+        };
+
+        // Dispatch update action
+        dispatch(updateCause(updatedCause))
+            .unwrap()
+            .then(() => {
+                alert(`Status updated to ${newStatus}`);
+            })
+            .catch((error) => {
+                console.error("Failed to update status:", error);
+                alert(`Failed to update status. Please try again.`);
+            });
     };
+
 
     const handleEditClick = (e: React.MouseEvent, cause: Causes) => {
         e.preventDefault();
@@ -198,6 +199,41 @@ export function Cause() {
         }, 0);
     };
 
+    // Helper function to check if a string is a valid base64 data URL
+    const isBase64DataUrl = (str: string) => {
+        if (!str) return false;
+        return str.startsWith('data:');
+    };
+
+    // Function to create an object URL from base64 data for PDF preview
+    const createPdfObjectUrl = (base64Data: string) => {
+        if (!base64Data) return null;
+
+        try {
+            // Check if it's a data URL and split into parts
+            const [dataType, base64String] = base64Data.split(';base64,');
+            const mimeType = dataType.split(':')[1] || 'application/pdf'; // Default to PDF
+
+            const byteCharacters = atob(base64String || base64Data);
+            const byteArrays = [];
+
+            for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+                const slice = byteCharacters.slice(offset, offset + 512);
+                const byteNumbers = new Array(slice.length);
+                for (let i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                byteArrays.push(byteArray);
+            }
+
+            const blob = new Blob(byteArrays, { type: mimeType });
+            return URL.createObjectURL(blob);
+        } catch (error) {
+            console.error("Error creating PDF object URL:", error);
+            return null;
+        }
+    };
 
     return (
         <>
@@ -326,15 +362,17 @@ export function Cause() {
                                 </label>
                             </div>
                             {pdfFile && (
-                                <a href={pdfFile} download="documentation.pdf" className="text-green-500 ">
-                                    Download PDF
+                                <a
+                                    href={pdfFile}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-green-500"
+                                >
+                                    Preview PDF
                                 </a>
                             )}
                         </div>
-
                     </div>
-
-
                 </div>
 
                 <AddButton name={isEditing ? "Update" : "Register"}/>
@@ -360,76 +398,101 @@ export function Cause() {
                             </thead>
                             <tbody id="my-table">
 
-                            {causes.map((cause: Causes) => (
-                                <tr key={cause.causeId}>
+                            {causes.map((cause: Causes) => {
+                                // Create PDF object URL if PDF exists
+                                const pdfObjectUrl = cause.documentation ?
+                                    createPdfObjectUrl(cause.documentation) : null;
 
-                                    <td className="custom-table-td">{cause.causeId}</td>
-                                    <td className="custom-table-td">{cause.title}</td>
-                                    <td className="custom-table-td">{cause.description}</td>
-                                    <td className="custom-table-td">
-                                        {cause.documentation ? (
-                                            <a href={cause.documentation} download="documentation.pdf" className="text-blue-500">Download PDF</a>
-                                        ) : (
-                                            "No Documentation"
-                                        )}
-                                    </td>
-                                    <td className="custom-table-td">{cause.date}</td>
-                                    <td className="custom-table-td">{cause.category}</td>
-                                    <td className="custom-table-td">{cause.location}</td>
-                                    <td className="custom-table-td">
-                                        {cause.image ? (
-                                            <img
-                                                src={cause.image}
-                                                alt="field_1"
-                                                className="w-20 h-20 object-cover"
-                                            />
-                                        ) : (
-                                            "No Image"
-                                        )}
-                                    </td>
-                                    <td className="custom-table-td">{cause.goalAmount}</td>
-                                    <td className="custom-table-td">{cause.raisedAmount}</td>
-                                    <td className="custom-table-td">
-                                        {cause.verifiedStatus}
-                                        {cause.verifiedStatus === "Pending" && (
-                                            <div className="mt-2 flex gap-2">
-                                                <button
-                                                    className="px-2 py-1 bg-green-500 text-white rounded"
-                                                    onClick={() => handleStatusChange(cause.causeId, "Verified")}
-                                                >
-                                                    Accept
-                                                </button>
-                                                <button
-                                                    className="px-2 py-1 bg-red-500 text-white rounded"
-                                                    onClick={() => handleStatusChange(cause.causeId, "Blocked")}
-                                                >
-                                                    Block
-                                                </button>
-                                            </div>
-                                        )}
-                                    </td>
-                                    <td className="custom-table-td flex flex-col gap-1 justify-center items-center h-auto">
-                                        <button
-                                            onClick={(e) => handleEditClick(e, cause)}
-                                            className="bg-[#fde047] text-black px-4 py-2 mt-1 rounded hover:bg-[#fef08a]"
-                                        >
-                                            <PencilSquareIcon className="w-5 h-5 "/>
-                                        </button>
-                                        <button
-                                            onClick={(e) => handleDelete(e, cause)}
-                                            className="bg-[#ef4444] text-black px-4 py-2 mt-1 rounded hover:bg-[#f87171]"
-                                        >
-                                            <TrashIcon className="w-5 h-5 "/>
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-
+                                return (
+                                    <tr key={cause.causeId}>
+                                        <td className="custom-table-td">{cause.causeId}</td>
+                                        <td className="custom-table-td">{cause.title}</td>
+                                        <td className="custom-table-td">{cause.description}</td>
+                                        <td className="custom-table-td">
+                                            {cause.documentation ? (
+                                                <div className="flex flex-col items-center">
+                                                    <a
+                                                        href={pdfObjectUrl}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-blue-500 mb-2"
+                                                    >
+                                                        Preview PDF
+                                                    </a>
+                                                    <embed
+                                                        src={pdfObjectUrl}
+                                                        type="application/pdf"
+                                                        className="w-64 h-32" // Adjust size as needed
+                                                    />
+                                                </div>
+                                            ) : (
+                                                "No Documentation"
+                                            )}
+                                        </td>
+                                        <td className="custom-table-td">{cause.date}</td>
+                                        <td className="custom-table-td">{cause.category}</td>
+                                        <td className="custom-table-td">{cause.location}</td>
+                                        <td className="custom-table-td">
+                                            {cause.image ? (
+                                                <img
+                                                    src={
+                                                        // If the image is a base64 data URL, use it directly
+                                                        isBase64DataUrl(cause.image)
+                                                            ? cause.image
+                                                            : // Otherwise, assume it's a JPEG base64 string (adjust if needed)
+                                                            `data:image/jpeg;base64,${cause.image}`
+                                                    }
+                                                    alt={`Image for ${cause.title}`}
+                                                    className="w-20 h-20 object-cover"
+                                                    onError={(e) => {
+                                                        e.currentTarget.src = "/dashboard/assets/no-image.png";
+                                                    }}
+                                                />
+                                            ) : (
+                                                "No Image"
+                                            )}
+                                        </td>
+                                        <td className="custom-table-td">{cause.goalAmount}</td>
+                                        <td className="custom-table-td">{cause.raisedAmount}</td>
+                                        <td className="custom-table-td">
+                                            {cause.verifiedStatus}
+                                            {cause.verifiedStatus === "Pending" && (
+                                                <div className="mt-2 flex gap-2">
+                                                    <button
+                                                        className="px-2 py-1 bg-green-500 text-white rounded"
+                                                        onClick={(e) => handleStatusChange(e, cause.causeId, "Verified")}
+                                                    >
+                                                        Accept
+                                                    </button>
+                                                    <button
+                                                        className="px-2 py-1 bg-red-500 text-white rounded"
+                                                        onClick={(e) => handleStatusChange(e, cause.causeId, "Blocked")}
+                                                    >
+                                                        Block
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </td>
+                                        <td className="custom-table-td flex flex-col gap-1 justify-center items-center h-auto">
+                                            <button
+                                                onClick={(e) => handleEditClick(e, cause)}
+                                                className="bg-[#fde047] text-black px-4 py-2 mt-1 rounded hover:bg-[#fef08a]"
+                                            >
+                                                <PencilSquareIcon className="w-5 h-5"/>
+                                            </button>
+                                            <button
+                                                onClick={(e) => handleDelete(e, cause)}
+                                                className="bg-[#ef4444] text-black px-4 py-2 mt-1 rounded hover:bg-[#f87171]"
+                                            >
+                                                <TrashIcon className="w-5 h-5"/>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                )})}
                             </tbody>
                         </table>
                     </div>
                 </section>
-
             </form>
         </>
     );

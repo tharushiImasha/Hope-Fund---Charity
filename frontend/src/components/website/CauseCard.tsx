@@ -1,24 +1,15 @@
 import {useNavigate} from "react-router-dom";
+import {Causes} from "../../models/dashboard/Causes.ts";
 
-interface Cause {
-    id: number;
-    title: string;
-    image: string;
-    goal: number;
-    raised: number;
-    category: string;
-    description: string;
-    location: string;
-}
+export function CauseCard({ cause }: { cause: Causes }) {
 
-export function CauseCard({ cause }: { cause: Cause }) {
-
-    const progress = (cause.raised / cause.goal) * 100;
+    const progress = (cause.raisedAmount / cause.goalAmount) * 100;
     const navigate = useNavigate();
 
     const loadDetails = () => {
         navigate('/donation', {
             state: cause,
+            documentation: cause.documentation
         });
     };
 
@@ -53,8 +44,8 @@ export function CauseCard({ cause }: { cause: Cause }) {
                 </div>
 
                 <p className="text-sm mt-6 text-gray-400 px-4">
-                    <span className="mr-6">💸 GOAL: ${cause.goal.toLocaleString()}</span>
-                    <span>📊 Raised: ${cause.raised.toLocaleString()}</span>
+                    <span className="mr-6">💸 GOAL: LKR {cause.goalAmount.toLocaleString()}</span>
+                    <span>📊 Raised: LKR {cause.raisedAmount.toLocaleString()}</span>
                 </p>
                 <button className="mt-8 px-6 py-2 border border-2 border-[#E7E7E7] rounded-[26px] hover:bg-gray-200 text-[14px] mx-4" onClick={loadDetails}>
                     Learn More

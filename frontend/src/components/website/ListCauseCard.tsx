@@ -1,18 +1,8 @@
 import {useNavigate} from "react-router-dom";
+import {Causes} from "../../models/dashboard/Causes.ts";
 
-interface ListCauseCardProps {
-    cause: {
-        image: string;
-        title: string;
-        category: string;
-        goal: number;
-        raised: number;
-        description: string;
-        location: string;
-    };
-}
 
-export function ListCauseCard({ cause }: ListCauseCardProps) {
+export function ListCauseCard({ cause }: Causes) {
 
     const navigate = useNavigate();
 
@@ -22,7 +12,7 @@ export function ListCauseCard({ cause }: ListCauseCardProps) {
         });
     };
 
-    const progress = (cause.raised / cause.goal) * 100;
+    const progress = (cause.raisedAmount / cause.goalAmount) * 100;
 
     return (
         <>
@@ -51,8 +41,8 @@ export function ListCauseCard({ cause }: ListCauseCardProps) {
 
                     {/* Goal & Raised */}
                     <div className="flex justify-between text-gray-600 text-sm mt-2">
-                        <p>🎯 GOAL: ${cause.goal.toLocaleString()}</p>
-                        <p>📈 Raised: ${cause.raised.toLocaleString()}</p>
+                        <p>🎯 GOAL: ${cause.goalAmount.toLocaleString()}</p>
+                        <p>📈 Raised: ${cause.raisedAmount.toLocaleString()}</p>
                     </div>
                 </div>
 

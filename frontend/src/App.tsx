@@ -8,7 +8,7 @@
 // import {RootLayout} from "./components/RootLayout.tsx";
 //
 // import {Login} from "./pages/dashboard/Login.tsx";
-// import {Register} from "./pages/dashboard/Register.tsx";
+// import {RegisterCharity} from "./pages/dashboard/RegisterCharity.tsx";
 // import {Dashboard} from "./pages/dashboard/Dashboard.tsx";
 // import {Charities as ch} from "./pages/dashboard/Charities.tsx";
 // import {Cause} from "./pages/dashboard/Cause.tsx";
@@ -29,7 +29,7 @@
 //           { path : '/donation', element : <DonationDetails/>},
 //
 //           { path : '/login', element : <Login/>},
-//           { path : '/register', element : <Register/>},
+//           { path : '/register', element : <RegisterCharity/>},
 //           { path : '/dashboard', element : <Dashboard/>},
 //           { path : '/crop', element : <ch/>},
 //           { path : '/fields', element : <Cause/>},
@@ -60,7 +60,8 @@ import { DonationDetails } from "./pages/website/DonationDetails.tsx";
 import { RootLayout } from "./components/RootLayout.tsx";
 
 import { Login } from "./pages/dashboard/Login.tsx";
-import { Register } from "./pages/dashboard/Register.tsx";
+import { RegisterCharity } from "./pages/dashboard/RegisterCharity.tsx";
+import { RegisterDonor } from "./pages/dashboard/RegisterDonor.tsx";
 import { Dashboard } from "./pages/dashboard/Dashboard.tsx";
 import { Charities as DashboardCharities } from "./pages/dashboard/Charities.tsx";
 import { Cause } from "./pages/dashboard/Cause.tsx";
@@ -81,7 +82,8 @@ function App() {
         { path: 'donation', element: <DonationDetails /> },
 
         { path: 'login', element: <Login /> },
-        { path: 'register', element: <Register /> },
+        { path: 'register/charity', element: <RegisterCharity /> },
+        { path: 'register/donor', element: <RegisterDonor /> },
         { path: 'dashboard', element: <Dashboard /> },
         { path: 'dashboard/charities', element: <DashboardCharities /> },
         { path: 'dashboard/causes', element: <Cause /> },
