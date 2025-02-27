@@ -7,11 +7,19 @@ const prisma = new PrismaClient();
 export async function CharityRepresentativeAdd(email: string, c: CharityRepresentative){
     try{
 
+        const existingUser = await prisma.user.findUnique({
+            where: { email }
+        });
+
+        if (existingUser) {
+            throw new Error('User with this email already exists');
+        }
+
         const newUser = await prisma.user.create({
             data: {
                 email: email,
                 password: "123",
-                role: "ADMIN"
+                role: "Charity Representative"
             }
         });
 

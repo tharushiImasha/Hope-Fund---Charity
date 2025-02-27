@@ -11,7 +11,7 @@ export async function DonorAdd(email: string, d: Donors){
             data: {
                 email: email,
                 password: "123",
-                role: "ADMIN"
+                role: "Donor"
             }
         });
 

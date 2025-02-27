@@ -175,7 +175,7 @@ router.post("/add", async(req: Request, res: Response) => {
             image: imageBase64,
             goalAmount: parseFloat(goalAmount),
             raisedAmount: parseFloat(raisedAmount),
-            verifiedStatus: verifiedStatus === 'true',
+            verifiedStatus: 'Pending',
             crId,
             adminId
         };
@@ -215,8 +215,7 @@ router.put("/update/:causeId", function(req: Request, res: Response) {
                 location: req.body.location || existingCp.location,
                 goalAmount: req.body.goalAmount ? parseFloat(req.body.goalAmount) : existingCp.goalAmount,
                 raisedAmount: req.body.raisedAmount ? parseFloat(req.body.raisedAmount) : existingCp.raisedAmount,
-                verifiedStatus: req.body.verifiedStatus !== undefined ?
-                    req.body.verifiedStatus === 'true' : existingCp.verifiedStatus,
+                verifiedStatus: req.body.verifiedStatus || existingCp.verifiedStatus,
                 crId: req.body.crId || existingCp.crId,
                 adminId: req.body.adminId || existingCp.adminId,
                 image: existingCp.image,

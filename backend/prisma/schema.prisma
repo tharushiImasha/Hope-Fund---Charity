@@ -56,7 +56,7 @@ model CharityProgramme {
   image          String
   goalAmount     Float
   raisedAmount   Float
-  verifiedStatus Boolean
+  verifiedStatus String
   crId           String?
   adminId        String?
 }

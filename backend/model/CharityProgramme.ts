@@ -12,7 +12,7 @@ export default class CharityProgramme {
     image!: string;
     goalAmount!: number;
     raisedAmount!: number;
-    verifiedStatus!: boolean;
+    verifiedStatus!: string;
     crId?: string;
     adminId?: string;
 }
