@@ -27,7 +27,7 @@ export function Header({ searchLabel }) {
     }, []);
 
     const handleProfileClick = () => {
-        navigate('/profile'); // Navigate to the profile route
+        navigate('/profile');
     };
 
     return (

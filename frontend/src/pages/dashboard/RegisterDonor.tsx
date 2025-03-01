@@ -12,7 +12,7 @@ import {
     updateProfile,
 } from "firebase/auth";
 import { auth, googleProvider, db } from "../../firebase.ts";
-import { doc, setDoc } from "firebase/firestore"; // For Firestore
+import { doc, setDoc } from "firebase/firestore";
 
 export function RegisterDonor() {
     const [showPassword, setShowPassword] = useState(false);

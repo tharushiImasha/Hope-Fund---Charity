@@ -429,10 +429,9 @@ export function Cause() {
                                             {cause.image ? (
                                                 <img
                                                     src={
-                                                        // If the image is a base64 data URL, use it directly
                                                         isBase64DataUrl(cause.image)
                                                             ? cause.image
-                                                            : // Otherwise, assume it's a JPEG base64 string (adjust if needed)
+                                                            :
                                                             `data:image/jpeg;base64,${cause.image}`
                                                     }
                                                     alt={`Image for ${cause.title}`}

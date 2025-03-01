@@ -14,13 +14,11 @@ export function AdditionalInfoForm() {
         e.preventDefault();
 
         try {
-            // Update the user document in Firestore with additional data
             await setDoc(doc(db, "users", uid), {
                 phone,
                 address,
             }, { merge: true });
 
-            // Navigate to the dashboard or home page
             navigate("/dashboard");
         } catch (error) {
             console.error("Error updating user data:", error);

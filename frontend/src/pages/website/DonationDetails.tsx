@@ -11,7 +11,6 @@ export function DonationDetails() {
     const dispatch = useDispatch();
     const donation = useSelector((state) => state.donation);
 
-    // Donation state variables
     const [anonymous, setAnonymous] = useState(false);
     const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
     const [customAmount, setCustomAmount] = useState("");
@@ -19,12 +18,10 @@ export function DonationDetails() {
     const [supportMessage, setSupportMessage] = useState("");
     const [errors, setErrors] = useState<{ amount?: string; paymentMethod?: string }>({});
 
-    // Handle if no cause is found
     if (!cause) {
         return <div className="text-center text-red-500">No cause details found.</div>;
     }
 
-    // Set default values if needed
     if (!cause.goalAmount || !cause.raisedAmount) {
         cause.goalAmount = 0;
         cause.raisedAmount = 0;
@@ -32,17 +29,15 @@ export function DonationDetails() {
 
     const progress = Math.round((cause.raisedAmount / cause.goalAmount) * 100);
 
-    // Handle amount selection
     const handleAmountSelect = (amount: number) => {
         setSelectedAmount(amount);
         setCustomAmount("");
         setErrors({ ...errors, amount: undefined });
     };
 
-    // Handle custom amount input
     const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        // Allow only numbers
+
         if (/^\d*$/.test(value)) {
             setCustomAmount(value);
             setSelectedAmount(null);
@@ -50,49 +45,41 @@ export function DonationDetails() {
         }
     };
 
-    // Handle payment method selection
     const handlePaymentMethodSelect = (method: string) => {
         setSelectedPaymentMethod(method);
         setErrors({ ...errors, paymentMethod: undefined });
     };
 
-    // Function to get current date in YYYY-MM-DD format
     const getCurrentDate = () => {
         const date = new Date();
         return date.toISOString().split('T')[0];
     };
 
-    // Generate a unique donation ID
     const generateDonationId = () => {
         return `DON-${Date.now()}`;
     };
 
-    // Handle donation submission
     const handleDonateNow = () => {
-        // Validate inputs
+
         const newErrors: { amount?: string; paymentMethod?: string } = {};
 
-        // Check if amount is selected or entered
         const finalAmount = selectedAmount || (customAmount ? parseInt(customAmount) : 0);
         if (!finalAmount || finalAmount <= 0) {
             newErrors.amount = "Please select or enter a valid donation amount";
         }
 
-        // Check if payment method is selected
         if (!selectedPaymentMethod) {
             newErrors.paymentMethod = "Please select a payment method";
         }
 
-        // If there are errors, show them and prevent submission
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
         }
 
-        // Create donation object using your Donation class constructor
         const newDonation = new Donation(
             generateDonationId(),
-            anonymous ? "" : "Anonymous",             // donorId - Replace with actual user ID from auth
+            anonymous ? "" : "Anonymous",
             cause.causeId || "",
             finalAmount,
             getCurrentDate(),
@@ -104,15 +91,12 @@ export function DonationDetails() {
 
         dispatch(addDonation(newDonation));
 
-        // Here you would typically handle payment processing
-        // For now, let's simulate a successful donation
+
         alert("Thank you for your donation!");
 
-        // Navigate to a success page or back to causes list
-        // navigate('/donation-success', { state: { donation: newDonation } });
+
     };
 
-    // Function to load documentation
     function loadDocs() {
         console.log("Documentation:", cause.documentation);
 
@@ -123,12 +107,10 @@ export function DonationDetails() {
 
         let base64String = cause.documentation;
 
-        // Ensure the Base64 string has the correct prefix
         if (!base64String.startsWith("data:application/pdf;base64,")) {
             base64String = "data:application/pdf;base64," + base64String;
         }
 
-        // Convert Base64 to a Blob
         const byteCharacters = atob(base64String.split(",")[1]);
         const byteNumbers = new Array(byteCharacters.length);
         for (let i = 0; i < byteCharacters.length; i++) {
@@ -137,7 +119,6 @@ export function DonationDetails() {
         const byteArray = new Uint8Array(byteNumbers);
         const blob = new Blob([byteArray], { type: "application/pdf" });
 
-        // Create a URL and open it in a new tab
         const url = URL.createObjectURL(blob);
         window.open(url);
     };

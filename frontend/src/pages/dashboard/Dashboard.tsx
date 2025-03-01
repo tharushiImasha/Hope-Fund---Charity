@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import { useState } from "react";
 import {
     BarChart,
     Bar,
@@ -14,74 +14,29 @@ import {
 } from 'recharts';
 
 export function Dashboard() {
-
     type ChartData = {
         name: string;
         value: number;
     };
 
-    const data: ChartData[] = [
+    const donationData: ChartData[] = [
         { name: 'Health', value: 400 },
         { name: 'Education', value: 300 },
-        { name: 'Animal', value: 200 },
-        { name: 'Cancer', value: 278 },
+        { name: 'Animal Welfare', value: 200 },
+        { name: 'Cancer Support', value: 278 },
     ];
 
-    const apiKey: string = "c020e98536e93899394afe2946800208";
-    const city: string = "Galle";
-
-    interface WeatherData {
-        weather: { description: string; icon: string }[];
-        main: { temp: number };
-    }
-
-    const [weatherStatus, setWeatherStatus] = useState<string>("");
-    const [temperature, setTemperature] = useState<string>("");
-    const [weatherIcon, setWeatherIcon] = useState<string>("");
-    const [time, setTime] = useState<string>(new Date().toLocaleTimeString());
-
-    useEffect(() => {
-        async function fetchWeather(): Promise<void> {
-            try {
-                const response = await fetch(
-                    `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`
-                );
-                if (!response.ok) throw new Error(`Error fetching weather data: ${response.statusText}`);
-
-                const data: WeatherData = await response.json();
-                setWeatherStatus(
-                    data.weather[0].description.charAt(0).toUpperCase() +
-                    data.weather[0].description.slice(1)
-                );
-                setTemperature(`${data.main.temp} °C`);
-                setWeatherIcon(`http://openweathermap.org/img/wn/${data.weather[0].icon}.png`);
-            } catch (error) {
-                console.error("Error fetching weather data:", error);
-            }
-        }
-
-        fetchWeather();
-
-        // Update time every second
-        const timeInterval = setInterval(() => {
-            setTime(new Date().toLocaleTimeString());
-        }, 1000);
-
-        return () => clearInterval(timeInterval); // Cleanup on unmount
-    }, []);
-
-    const [activeIndex, setActiveIndex] = useState(-1);
-
-    const pieData = [
-        { name: 'Chick Pea', amount: 400 },
-        { name: 'Cassava', amount: 700 },
-        { name: 'Green Gram', amount: 200 },
-        { name: 'Rice', amount: 1000 }
+    const userActivityData = [
+        { name: 'New Donors', amount: 150 },
+        { name: 'Recurring Donors', amount: 85 },
+        { name: 'Active Campaigns', amount: 50 },
+        { name: 'Completed Campaigns', amount: 120 }
     ];
 
     const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+    const [activeIndex, setActiveIndex] = useState(-1);
 
-    const onPieEnter = (_, index) => {
+    const onPieEnter = (_: any, index: number) => {
         setActiveIndex(index);
     };
 
@@ -91,13 +46,13 @@ export function Dashboard() {
                 <div className="px-10 py-5">
                     <div className="mb-8">
                         <h5 className="text-gray-500 text-lg">Hello,</h5>
-                        <h2 className="text-[32px] font-bold">{localStorage.getItem("name")}</h2>
+                        <h2 className="text-[32px] font-bold mb-[60px]">{localStorage.getItem("name")}</h2>
                     </div>
                     <section className="grid grid-cols-2 gap-6">
                         <div className="bg-white p-4 rounded-lg shadow-md h-[400px]">
-                            <h3 className="text-lg font-semibold text-center mt-[20px]">Charity Categories</h3>
+                            <h3 className="text-lg font-semibold text-center mt-[20px]">Donation Categories</h3>
                             <ResponsiveContainer width="100%" height={320}>
-                                <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                <BarChart data={donationData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis dataKey="name" />
                                     <YAxis />
@@ -108,63 +63,36 @@ export function Dashboard() {
                             </ResponsiveContainer>
                         </div>
 
-                        <div className="bg-white p-4 rounded-lg shadow-md flex flex-col items-center justify-center ">
-                            <h3 className="text-lg font-semibold text-center mt-[20px] mb-[30px]">Most Cultivated Plants</h3>
+                        <div className="bg-white p-4 rounded-lg shadow-md flex flex-col items-center justify-center">
+                            <h3 className="text-lg font-semibold text-center mt-[20px] mb-[30px]">User Activity Overview</h3>
                             <PieChart width={250} height={250}>
                                 <Pie
                                     activeIndex={activeIndex}
-                                    data={pieData}
+                                    data={userActivityData}
                                     dataKey="amount"
                                     outerRadius={120}
                                     fill="green"
                                     onMouseEnter={onPieEnter}
-                                    style={{ cursor: 'pointer', outline: 'none' }} // Ensure no outline on focus
+                                    style={{ cursor: 'pointer', outline: 'none' }}
                                 >
-                                    {pieData.map((entry, index) => (
+                                    {userActivityData.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
                                 <Tooltip />
                             </PieChart>
-
                         </div>
 
-                        {/* Weather Widget */}
-                        <div className="bg-white p-4 rounded-lg shadow-md h-[250px] text-center flex flex-col justify-center">
-                            <div className="bg-[url('/public/assets/weather.jpeg')] rounded-lg p-[15px]">
-                                <h3 className="text-[20px] font-semibold mt-[10px]">Weather</h3>
-                                <div className="flex items-center justify-center gap-2">
-                                    <img
-                                        src={weatherIcon}
-                                        alt="Weather Icon"
-                                        className="w-[150px] h-auto"
-                                    />
-                                    <h2 className="text-xl font-bold">{weatherStatus || "Loading..."}</h2>
-                                </div>
-                            </div>
-
+                        <div className="bg-white p-4 rounded-lg shadow-md h-[200px] text-center flex flex-col justify-center">
+                            <h3 className="text-lg font-semibold mb-2">Pending Charities</h3>
+                            <h2 className="text-3xl font-bold text-red-600">12</h2>
                         </div>
 
-                        {/* Temperature and Time Widget */}
-                        <div
-                            className="bg-white p-4 rounded-lg shadow-md flex flex-col items-center justify-center gap-2">
-                            <div className="bg-[#F1F7F7] w-full flex justify-center gap-8 items-center py-[10px]">
-                                <img src="/dashboard/assets/temp.png" alt="Temp Icon" className="w-14 h-14"/>
-                                <div className="flex flex-col items-center ">
-                                    <h3 className="text-lg font-semibold mb-[20px] text-center">Temperature</h3>
-                                    <h2 className="text-xl font-bold">{temperature || "Loading..."}</h2>
-                                </div>
-                            </div>
-
-                            <div className="bg-[#F1F7F7] w-full flex gap-8 justify-center items-center py-[10px]">
-                                <img src="/dashboard/assets/time.png" alt="Time Icon" className="w-14 h-14"/>
-                                <div className="flex flex-col items-center">
-                                    <h3 className="text-lg font-semibold mb-[20px] text-center">Time</h3>
-                                    <h2 className="text-xl font-bold">{time}</h2>
-                                </div>
-                            </div>
-
+                        <div className="bg-white p-4 rounded-lg shadow-md h-[200px] text-center flex flex-col justify-center">
+                            <h3 className="text-lg font-semibold mb-2">New Donors for This Week</h3>
+                            <h2 className="text-3xl font-bold text-green-600">24</h2>
                         </div>
+
                     </section>
                 </div>
             </main>

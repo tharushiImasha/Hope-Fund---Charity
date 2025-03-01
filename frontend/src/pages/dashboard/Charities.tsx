@@ -80,10 +80,8 @@ export function Charities() {
                 address: formData.address,
             };
 
-            // Dispatch the update action
             dispatch(updateCharity(updatedCr));
 
-            // Update the local adminDetails state immediately
             setCharityDetails(prevDetails =>
                 prevDetails.map(admin =>
                     admin.email === editEmail
@@ -92,7 +90,6 @@ export function Charities() {
                 )
             );
 
-            // Reset form and editing state
             setIsEditing(false);
             setEditEmail(null);
             dispatch(resetFormData());
@@ -160,7 +157,6 @@ export function Charities() {
             userId: charity.userId || ''
         };
 
-        // Dispatch a single batch update for all form fields
         Object.entries(formDataToSet).forEach(([name, value]) => {
             dispatch(updateFormData({ name, value }));
         });

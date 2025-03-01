@@ -11,14 +11,12 @@ export function Volunteer() {
     return (
         <>
             <div className="relative w-full h-[370px] flex items-center justify-center text-center">
-                {/* Background Image */}
                 <img
                     src="/website/assets/Volunteer.png"
                     alt="Volunteer"
                     className="absolute inset-0 w-full h-full object-cover"
                 />
 
-                {/* Content */}
                 <div className="relative z-10 px-4">
                     <h1 className="text-white text-[40px] font-semibold drop-shadow-xl text-shadow-10">
                         Forget what you can get and <br /> see what you can give

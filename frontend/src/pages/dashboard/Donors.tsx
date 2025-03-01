@@ -74,7 +74,6 @@ export function Donors() {
                 phone: formData.phone,
             };
 
-            // Dispatch the update action
             dispatch(updateDonor(updatedDonor));
 
             setDonorDetails(prevDetails =>
@@ -197,7 +196,7 @@ export function Donors() {
                                 </thead>
                                 <tbody id="my-table">
                                 {donorDetails.map(donors => (
-                                    <tr key={donors.email}> {/* Added key prop */}
+                                    <tr key={donors.email}>
                                         <td className="custom-table-td">{donors.email}</td>
                                         <td className="custom-table-td">{donors.name}</td>
                                         <td className="custom-table-td">{donors.phone}</td>
@@ -212,7 +211,7 @@ export function Donors() {
                                                 onClick={(e) => handleDelete(e, donors)}
                                                 className="bg-[#ef4444] text-black px-4 py-2 mt-1 rounded hover:bg-[#f87171]"
                                             >
-                                                <TrashIcon className="w-5 h-5" /> {/* Removed extra space */}
+                                                <TrashIcon className="w-5 h-5" />
                                             </button>
                                         </td>
                                     </tr>

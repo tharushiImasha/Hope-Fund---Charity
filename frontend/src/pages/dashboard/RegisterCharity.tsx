@@ -25,7 +25,6 @@ export function RegisterCharity() {
 
     const handleRegister = async () => {
         try {
-            // Create user with email and password
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
                 formData.email,
@@ -33,12 +32,10 @@ export function RegisterCharity() {
             );
             const user = userCredential.user;
 
-            // Update user profile with display name
             await updateProfile(user, {
                 displayName: formData.name,
             });
 
-            // Prepare charity data for Firestore
             const charityData = {
                 uid: user.uid,
                 name: formData.name || "",
@@ -51,20 +48,15 @@ export function RegisterCharity() {
 
             console.log("Charity Data:", charityData); // Debugging
 
-            // Add charity data to Firestore
-            // await setDoc(doc(db, "charities", user.uid), charityData);
-
-            // Add user to Redux store
             dispatch(addUser(charityData));
             dispatch(addCharity(charityData));
 
-            // Save data to localStorage (optional)
             localStorage.setItem("email", charityData.email);
             localStorage.setItem("name", charityData.name);
             localStorage.setItem("role", charityData.role);
 
-            // Navigate to home or dashboard
             navigate("/");
+
         } catch (error) {
             console.error("Error creating account:", error);
             alert("Error creating account. Check the console for details.");

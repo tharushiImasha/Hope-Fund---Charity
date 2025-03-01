@@ -25,7 +25,7 @@ export function CreateCharityPopup() {
     const categories: Category[] = ["Health", "Education",  "Animal", "Cancer"];
 
     const generateCauseId = () => {
-        const randomPart = Math.random().toString(36).substr(2, 9); // Generates a random string
+        const randomPart = Math.random().toString(36).substr(2, 9);
         return `CP${randomPart}`;
     };
 

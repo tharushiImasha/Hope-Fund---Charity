@@ -65,25 +65,21 @@ export function Admin() {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (isEditing && editEmail) {
-            // Make sure we have the complete admin object with the correct email
             const adminToUpdate = adminDetails.find(admin => admin.email === editEmail);
             if (!adminToUpdate) {
                 alert('Admin not found.');
                 return;
             }
 
-            // Create the updated admin object with the form data
             const updatedAdmin = {
-                email: editEmail, // Keep the original email as identifier
+                email: editEmail,
                 name: formData.name,
                 phone: formData.phone,
                 address: formData.address,
             };
 
-            // Dispatch the update action
             dispatch(updateAdmin(updatedAdmin));
 
-            // Update the local adminDetails state immediately
             setAdminDetails(prevDetails =>
                 prevDetails.map(admin =>
                     admin.email === editEmail
@@ -92,7 +88,6 @@ export function Admin() {
                 )
             );
 
-            // Reset form and editing state
             setIsEditing(false);
             setEditEmail(null);
             dispatch(resetFormData());
@@ -148,11 +143,9 @@ export function Admin() {
 
         console.log('Starting edit process for admin:', admin.email);
 
-        // Set editing state
         setIsEditing(true);
         setEditEmail(admin.email);
 
-        // Prepare the form data from the admin object
         const formDataToSet = {
             email: admin.email || '',
             name: admin.name || '',
@@ -162,7 +155,6 @@ export function Admin() {
             userId: admin.userId || ''
         };
 
-        // Dispatch a single batch update for all form fields
         Object.entries(formDataToSet).forEach(([name, value]) => {
             dispatch(updateFormData({ name, value }));
         });

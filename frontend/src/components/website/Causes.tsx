@@ -12,7 +12,7 @@ export function Causes() {
     const approvedCauses = causes.filter((cause) => cause.verifiedStatus === "Verified");
 
     useEffect(() => {
-        dispatch(getCause()); // Fetch latest causes on mount
+        dispatch(getCause());
     }, [dispatch]);
 
     return (
