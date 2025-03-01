@@ -64,10 +64,8 @@ export function Cause() {
                 formDataObj.append('documentation', document.getElementById('documentation').files[0]);
             }
 
-            // Add verification status
             formDataObj.append('verifiedStatus', 'Pending');
 
-            // Dispatch the action with FormData
             dispatch(addCause(formDataObj));
             resetForm();
         }
@@ -141,13 +139,11 @@ export function Cause() {
             return;
         }
 
-        // Create updated cause object
         const updatedCause = {
             ...existingCause,
             verifiedStatus: newStatus,
         };
 
-        // Dispatch update action
         dispatch(updateCause(updatedCause))
             .unwrap()
             .then(() => {
@@ -199,20 +195,17 @@ export function Cause() {
         }, 0);
     };
 
-    // Helper function to check if a string is a valid base64 data URL
     const isBase64DataUrl = (str: string) => {
         if (!str) return false;
         return str.startsWith('data:');
     };
 
-    // Function to create an object URL from base64 data for PDF preview
     const createPdfObjectUrl = (base64Data: string) => {
         if (!base64Data) return null;
 
         try {
-            // Check if it's a data URL and split into parts
             const [dataType, base64String] = base64Data.split(';base64,');
-            const mimeType = dataType.split(':')[1] || 'application/pdf'; // Default to PDF
+            const mimeType = dataType.split(':')[1] || 'application/pdf';
 
             const byteCharacters = atob(base64String || base64Data);
             const byteArrays = [];

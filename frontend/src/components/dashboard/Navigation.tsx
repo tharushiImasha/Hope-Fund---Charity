@@ -1,6 +1,8 @@
 import {Link} from "react-router";
 import {useState} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
+import { auth } from "../../firebase.ts";
+import { signOut } from "firebase/auth";
 
 export function Navigation({ setSearchLabel, setImage }) {
     const location = useLocation();
@@ -13,9 +15,14 @@ export function Navigation({ setSearchLabel, setImage }) {
         setImage(image);
     };
 
-    function logout() {
-        navigate('/');
-    }
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            navigate('/');
+        } catch (error) {
+            console.error("Error logging out:", error);
+        }
+    };
 
     return (
         <>
@@ -31,8 +38,7 @@ export function Navigation({ setSearchLabel, setImage }) {
                             { id: 'staff-btn', path: '/dashboard/donors', icon: '/dashboard/assets/donation.png', label: 'Donors', image: '/dashboard/assets/Donor-img.png' },
                             { id: 'fields-btn', path: '/dashboard/causes', icon: '/dashboard/assets/causes.png', label: 'Causes', image: '/dashboard/assets/Cause-img.png' },
                             { id: 'vehicles-btn', path: '/dashboard/admin', icon: '/dashboard/assets/Admin.png', label: 'Admins', image: '/dashboard/assets/Admin-img.png' },
-                            // { id: 'equipment-btn', path: '/equipment', icon: '/assets/Equipment.png', label: 'Equipment', image: '/assets/Equipment-img.png' },
-                            // { id: 'logs-btn', path: '/logs', icon: '/assets/Logs.png', label: 'Logs', image: '/assets/Logs-img.png' },
+                            { id: 'donation-btn', path: '/dashboard/donation', icon: '/dashboard/assets/donation-icon.png', label: 'Donation', image: '/dashboard/assets/donations-side.png' },
                         ].map((item) => (
                             <li
                                 key={item.id}
@@ -51,10 +57,10 @@ export function Navigation({ setSearchLabel, setImage }) {
                             </li>
                         ))}
                     </ul>
-                    <div className="mt-[170px]">
+                    <div className="mt-[140px]">
                         <button
                             id="logout"
-                            className="flex items-center gap-4 px-10 py-2 text-[#006307] hover:text-[#162635] transition" onClick={logout}
+                            className="flex items-center gap-4 px-10 py-2 text-[#006307] hover:text-[#162635] transition" onClick={handleLogout}
                         >
                             <img src="/dashboard/assets/Logout.png" alt="Logout" className="w-6 h-6"/>
                             <span>Logout</span>

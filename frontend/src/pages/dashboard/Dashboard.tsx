@@ -21,11 +21,10 @@ export function Dashboard() {
     };
 
     const data: ChartData[] = [
-        { name: 'Rice', value: 400 },
-        { name: 'Green Gram', value: 300 },
-        { name: 'Cow Pea', value: 200 },
-        { name: 'Cassava', value: 278 },
-        { name: 'Chick Pea', value: 189 },
+        { name: 'Health', value: 400 },
+        { name: 'Education', value: 300 },
+        { name: 'Animal', value: 200 },
+        { name: 'Cancer', value: 278 },
     ];
 
     const apiKey: string = "c020e98536e93899394afe2946800208";
@@ -96,7 +95,7 @@ export function Dashboard() {
                     </div>
                     <section className="grid grid-cols-2 gap-6">
                         <div className="bg-white p-4 rounded-lg shadow-md h-[400px]">
-                            <h3 className="text-lg font-semibold text-center mt-[20px]">Field Extent Sizes</h3>
+                            <h3 className="text-lg font-semibold text-center mt-[20px]">Charity Categories</h3>
                             <ResponsiveContainer width="100%" height={320}>
                                 <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                     <CartesianGrid strokeDasharray="3 3" />

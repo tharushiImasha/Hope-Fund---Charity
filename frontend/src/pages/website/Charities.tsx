@@ -4,8 +4,6 @@ import { FaBars, FaThLarge } from "react-icons/fa";
 import { CauseCard } from "../../components/website/CauseCard.tsx";
 import { ListCauseCard } from "../../components/website/ListCauseCard.tsx";
 import {getCause} from "../../reducers/CauseSlice.ts";
-import {Charity} from "../../models/dashboard/Charity.ts";
-import {Causes} from "../../models/dashboard/Causes.ts";
 import {useDispatch, useSelector} from "react-redux";
 
 // Define our category options
@@ -18,18 +16,14 @@ const categories = [
     { name: "Emergency", icon: "/website/assets/icons/emergency.png" },
 ];
 
-
-// Our base charity data - this should be your complete list
-const charities: Causes[] = [
-
-];
-
 export function Charities() {
 
     const dispatch = useDispatch();
     const causes = useSelector((state) => state.cause );
 
-    // State management
+    const approvedCauses = causes.filter((cause) => cause.verifiedStatus === "Verified");
+
+
     const [selectedCategory, setSelectedCategory] = useState<string>("All");
     const [isLoading, setIsLoading] = useState(false);
     const [view, setView] = useState<"grid" | "list">("grid");
@@ -43,8 +37,9 @@ export function Charities() {
 
     const filteredCharities = useMemo(() => {
         if (isLoading) return [];
-        if (selectedCategory === "All") return causes;
-        return causes.filter((cause: any) => cause.category === selectedCategory);
+        if (selectedCategory === "All") return approvedCauses;
+
+        return approvedCauses.filter((cause: any) => cause.category === selectedCategory);
     }, [selectedCategory, causes, isLoading]);
 
     const handleCategoryChange = (category: string) => {

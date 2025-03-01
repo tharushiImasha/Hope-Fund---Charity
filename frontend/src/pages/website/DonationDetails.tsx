@@ -92,7 +92,7 @@ export function DonationDetails() {
         // Create donation object using your Donation class constructor
         const newDonation = new Donation(
             generateDonationId(),
-            anonymous ? "" : "user-id-here",             // donorId - Replace with actual user ID from auth
+            anonymous ? "" : "Anonymous",             // donorId - Replace with actual user ID from auth
             cause.causeId || "",
             finalAmount,
             getCurrentDate(),

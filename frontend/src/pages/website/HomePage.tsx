@@ -3,8 +3,17 @@ import {WhoAreWeSection} from "../../components/website/WhoAreWeSection.tsx";
 import {Causes} from "../../components/website/Causes.tsx";
 import {Volunteer} from "../../components/website/Volunteer.tsx";
 import {ClientSay} from "../../components/website/ClientSay.tsx";
+import {useState} from "react";
+import {CreateCharityPopup} from "../../components/website/CreateCharityPopup.tsx";
 
 export function HomePage() {
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+    function popup(){
+        setIsPopupOpen(true);
+        console.log("popup");
+    }
+
     return (
         <>
             <div className="relative w-full h-screen flex items-center bg-cover  bg-[url(/website/assets/Home-Image.png)] clip-bottom-shape">
@@ -19,6 +28,9 @@ export function HomePage() {
                     <button className="mt-[45px] px-6 py-3 bg-[#00C424] text-white rounded-[26px] border-white border-1 text-lg font-semibold shadow-md hover:bg-green-600 transition cursor-pointer">
                         Start Donation
                     </button>
+                    <button className="mt-[45px] ml-5 px-6 py-3 bg-transparent text-white rounded-[26px] border-white border-1 text-lg font-semibold shadow-md hover:bg-green-600 transition cursor-pointer" onClick={popup}>
+                        Create a charity
+                    </button>
                 </div>
             </div>
 
@@ -29,6 +41,10 @@ export function HomePage() {
                 <Volunteer/>
                 <ClientSay/>
             </section>
+
+            {isPopupOpen && (
+                <CreateCharityPopup/>
+            )}
         </>
     );
 }

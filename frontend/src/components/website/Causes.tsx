@@ -9,6 +9,8 @@ export function Causes() {
     const dispatch = useDispatch<AppDispatch>();
     const causes = useSelector((state: RootState) => state.cause);
 
+    const approvedCauses = causes.filter((cause) => cause.verifiedStatus === "Verified");
+
     useEffect(() => {
         dispatch(getCause()); // Fetch latest causes on mount
     }, [dispatch]);
@@ -21,10 +23,10 @@ export function Causes() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
-                {causes.length > 0 ? (
-                    causes.map((cause) => <CauseCard key={cause.causeId} cause={cause} />)
+                {approvedCauses.length > 0 ? (
+                    approvedCauses.map((cause) => <CauseCard key={cause.causeId} cause={cause} />)
                 ) : (
-                    <p className="text-center col-span-3 text-gray-500">No causes available</p>
+                    <p className="text-center col-span-3 text-gray-500">No approved causes available</p>
                 )}
             </div>
         </div>
