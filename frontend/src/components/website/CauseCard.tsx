@@ -20,7 +20,7 @@ export function CauseCard({ cause }: { cause: Causes }) {
                     <img
                         src={cause.image}
                         alt={cause.title}
-                        className="rounded-t-[30px] mb-4 w-[380px] h-auto object-cover"
+                        className="rounded-t-[30px] mb-4 w-[380px] h-auto max-h-[400px] object-cover"
                     />
                     <span className="absolute bottom-3 left-3 bg-[#00C424] text-white text-sm font-semibold px-3 py-1 rounded-md">
                         {cause.category}

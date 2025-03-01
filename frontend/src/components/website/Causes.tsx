@@ -9,7 +9,10 @@ export function Causes() {
     const dispatch = useDispatch<AppDispatch>();
     const causes = useSelector((state: RootState) => state.cause);
 
-    const approvedCauses = causes.filter((cause) => cause.verifiedStatus === "Verified");
+    const approvedCauses = causes
+        .filter((cause) => cause.verifiedStatus === "Verified")
+        .slice(-3)
+        .reverse();
 
     useEffect(() => {
         dispatch(getCause());

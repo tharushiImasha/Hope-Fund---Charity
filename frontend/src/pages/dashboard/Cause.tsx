@@ -392,7 +392,7 @@ export function Cause() {
                             <tbody id="my-table">
 
                             {causes.map((cause: Causes) => {
-                                // Create PDF object URL if PDF exists
+
                                 const pdfObjectUrl = cause.documentation ?
                                     createPdfObjectUrl(cause.documentation) : null;
 
