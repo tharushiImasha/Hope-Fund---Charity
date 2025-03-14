@@ -95,7 +95,7 @@ export function Cause() {
 
         if (confirmDelete) {
             try {
-                dispatch(deleteCause(cause));
+                dispatch(deleteCause(cause.causeId));
             } catch (error) {
                 console.log(error)
                 alert('Failed to delete cause. Please try again.');
