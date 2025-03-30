@@ -37,5 +37,5 @@ This project is licensed under the MIT License.
 For any inquiries, reach out at **tharushi.byb@gmail.com**
 
 ---
-Made with ❤️ by [Imasha]
+Made with ❤️ by Imasha
 
