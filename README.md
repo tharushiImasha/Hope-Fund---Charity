@@ -20,7 +20,13 @@ A full-stack donation and charity platform built using the MERN stack (MongoDB, 
 
 ## Screenshots
 ### Website
-![Website Screenshot](YOUR_IMAGE_URL_HERE)
+![Image](https://github.com/user-attachments/assets/c81d1eb2-9cca-4b42-bdd3-76a0ffe800ac)
+
+![Image](https://github.com/user-attachments/assets/0c266e8b-8a21-45aa-8975-eba0e92c82f0)
+
+![Image](https://github.com/user-attachments/assets/b6d28c77-b96b-4b58-b9b7-426099f4123b)
+
+![Image](https://github.com/user-attachments/assets/2ae550cd-7be1-42d3-81bb-ec3fce230ecb)
 
 ### Dashboard
 ![Dashboard Screenshot](YOUR_IMAGE_URL_HERE)
