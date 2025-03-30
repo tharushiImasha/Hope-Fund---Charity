@@ -9,7 +9,7 @@ A full-stack donation and charity platform built using the MERN stack (MongoDB, 
 - 📸 **Image & Document Uploads**: Support for Base64 uploads.
 - 📊 **Admin Dashboard**: Manage causes, donations, and users.
 - 💳 **Donation System**: Users can donate to causes securely.
-- 🎨 **Modern UI**: Modern design using Tailwind CSS.
+- 🎨 **Modern UI**: Modern UI design using Tailwind CSS.
 
 ## Technologies Used
 - **Frontend**: React, TypeScript, Tailwind CSS
