@@ -29,22 +29,6 @@ A full-stack donation and charity platform built using the MERN stack (MongoDB, 
 
 ![Image](https://github.com/user-attachments/assets/16ed4dbf-1925-478c-b56f-d1edf6b1be09)
 
-## Installation & Setup
-```sh
-# Clone the repository
-
-# Install frontend dependencies
-
-# Install backend dependencies
-
-## Environment Variables
-Create a `.env` file in the root directory and add the following:
-```
-FIREBASE_API_KEY=your_firebase_api_key
-FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
-DATABASE_URL=your_mysql_database_url
-JWT_SECRET=your_jwt_secret_key
-```
 
 ## License
 This project is licensed under the MIT License.
