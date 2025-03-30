@@ -19,7 +19,6 @@ A full-stack donation and charity platform built using the MERN stack (MongoDB, 
 - **State Management**: Redux
 
 ## Screenshots
-### Website
 ![Image](https://github.com/user-attachments/assets/c81d1eb2-9cca-4b42-bdd3-76a0ffe800ac)
 
 ![Image](https://github.com/user-attachments/assets/0c266e8b-8a21-45aa-8975-eba0e92c82f0)
@@ -28,8 +27,7 @@ A full-stack donation and charity platform built using the MERN stack (MongoDB, 
 
 ![Image](https://github.com/user-attachments/assets/2ae550cd-7be1-42d3-81bb-ec3fce230ecb)
 
-### Dashboard
-![Dashboard Screenshot](YOUR_IMAGE_URL_HERE)
+![Image](https://github.com/user-attachments/assets/16ed4dbf-1925-478c-b56f-d1edf6b1be09)
 
 ## Installation & Setup
 ```sh
